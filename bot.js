@@ -5,24 +5,15 @@ const gapi = require('./gapi.js');
 var auth = require('./auth.json');
 const token = auth.token;
 
+var configDict = require('./config.json');
+// google sheet id
+const ssidlist = configDict.ssidlist
+const chlist = configDict.chlist
+
 const column = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
     'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ',
     'BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH']
 var objlist = { "1": "一王", "2": "二王", "3": "三王", "4": "四王", "5": "五王", "一": "一王", "二": "二王", "三": "三王", "四": "四王", "五": "五王" }
-
-
-// google sheet id
-const ssidlist = [
-    '1B59MPDbQokXq3vkEG5oG2Ef8-JccN8eWsl9r6gTew6w',  //將本行更新為你們公會的表單ID 記得放在引號裡面
-]
-
-const chlist = {
-    '562681435224539141': ssidlist[0],
-    '562170871213719553': ssidlist[0],
-    //在這兩個頻道中填表, 都會連結到上面的第一個表單
-    //'新頻道ID': ssidlist[1],
-
-}
 
 //channel id : role id
 // const grouptaglist = {
