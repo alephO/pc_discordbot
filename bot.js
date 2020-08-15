@@ -22,7 +22,7 @@ var objlist = { "1": "一王", "2": "二王", "3": "三王", "4": "四王", "5":
 // }
 
 var userlist = {}
-// TODO: check this
+// TODO: check if this should be removes
 var channelid = '' //channel to broadcast from direct message
 
 
