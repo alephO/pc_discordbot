@@ -10,6 +10,8 @@ var configDict = require('./config.json');
 const ssidlist = configDict.ssidlist
 const chlist = configDict.chlist
 
+const debug = 'debug' in configDict? configDict.debug: false;
+
 const column = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
     'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ',
     'BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH']
@@ -55,7 +57,9 @@ queue.on('push', () => {
     }
 })
 queue.on('pop', (results) => {
-    // console.log('results', results)
+    if (debug){
+        console.log('results', results)
+    }
     if (queue.list.length > 0) {
         queue.run()
     }
