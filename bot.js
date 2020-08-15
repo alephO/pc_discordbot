@@ -22,7 +22,8 @@ var objlist = { "1": "一王", "2": "二王", "3": "三王", "4": "四王", "5":
 // }
 
 var userlist = {}
-var channelid = '' //channel to broadcast from direct message 
+// TODO: check this
+var channelid = '' //channel to broadcast from direct message
 
 
 /************************************** */
