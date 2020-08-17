@@ -58,7 +58,7 @@ queue.on('push', () => {
 })
 queue.on('pop', (results) => {
     if (debug){
-        console.log('results', results)
+        console.log('Queue pop results', results)
     }
     if (queue.list.length > 0) {
         queue.run()
@@ -70,14 +70,16 @@ queue.on('pop', (results) => {
 
 client.on('ready', async () => {
 
-    for (i in ssidlist) {
-        var ul = await gapi.getUserList(ssidlist[i]);
-        for (var j in ul) {
+    for (const i in ssidlist) {
+        const ul = await gapi.getUserList( ssidlist[i] );
+        /* TODO: This won't work for overlapping discord users in two sheets. e.g. you. Channel id needs to be a part
+                 of the key. We don't need to save table id here. Use the chlist instead.
+         */
+        for (const j in ul) {
             userlist[ul[j][1]] = [ul[j][0], ssidlist[i]];
         }
     }
     console.log(userlist);
-
     console.log(client.user.username + " is ready.");
 });
 
@@ -97,29 +99,9 @@ client.on('message', async message => {
             if (command === 'fill' || command === '填表' || command === '傷害') {
                 queue.push(async () => {
                     try {
-                        memberid = message.author.id;
-                        demage = parseInt(args[0]);
-                        if (isNaN(demage) || demage > 10000000) {
-                            message.reply('傷害數值錯誤或過高!');
-                            return;
-                        }
-                        object = '';
-                        ps = '';
-                        if (args.length >= 2) {
-                            for (var i = 1; i < args.length; i++) {
-                                arg = args[i].substring(0, 1);
-                                // console.log(arg)
-                                if (arg === '尾' || arg === '殘') {
-                                    ps = arg;
-                                }
-                                else if (arg === '1' || arg === '2' || arg === '3' || arg === '4' || arg === '5'
-                                    || arg === '一' || arg === '二' || arg === '三' || arg === '四' || arg === '五') {
-                                    object = arg;
-                                }
-                                else throw new Error('不正確的fill指令: ' + message.author.username + ':' + message.content)
-                            }
-                        }
-                        await fillandreply(message, memberid, demage, object, ps);
+                        member_id = message.author.id;
+                        const damage = parseInt(args[0]);
+                        await dofill(message, member_id, args, damage);
                     }
                     //例外狀況
                     catch (err) {
@@ -132,32 +114,13 @@ client.on('message', async message => {
             else if (command === 'fillfor' || command === '代填' || command === '幫填') {
                 queue.push(async () => {
                     try {
-                        var memberid = args[0].replace(/[^0-9\.]+/g, '');
-                        if (!(memberid in userlist)) {
+                        const member_id = args[0].replace(/[^0-9\.]+/g, '');
+                        if (!(member_id in userlist)) {
                             throw new Error('錯誤的成員名稱!');
                         }
-                        demage = parseInt(args[1]);
-                        if (isNaN(demage)) {
-                            message.reply('傷害數值錯誤!');
-                            return;
-                        }
-                        object = '';
-                        ps = '';
-                        if (args.length >= 3) {
-                            for (var i = 2; i < args.length; i++) {
-                                arg = args[i].substring(0, 1);
-                                // console.log(arg)
-                                if (arg === '尾' || arg === '殘') {
-                                    ps = arg;
-                                }
-                                else if (arg === '1' || arg === '2' || arg === '3' || arg === '4' || arg === '5'
-                                    || arg === '一' || arg === '二' || arg === '三' || arg === '四' || arg === '五') {
-                                    object = arg;
-                                }
-                                else throw new Error('不正確的fill指令: ' + message.author.username + ':' + message.content)
-                            }
-                        }
-                        await fillandreply(message, memberid, demage, object, ps);
+                        args.shift()
+                        damage = parseInt(args[0]);
+                        await dofill(message, member_id, args, damage)
                     }
                     //例外狀況
                     catch (err) {
@@ -172,18 +135,18 @@ client.on('message', async message => {
                 queue.push(async () => {
 
                     //查自己的
-                    if (args.length == 0) {
-                        memberid = message.author.id;
-                        statusandreply(message, memberid)
+                    if (args.length === 0) {
+                        member_id = message.author.id;
+                        statusandreply(message, member_id)
                     }
                     //查別人的
-                    else if (args.length == 1) {
-                        memberid = args[0].replace(/[^0-9\.]+/g, '');
-                        if (!(memberid in userlist)) {
+                    else if (args.length === 1) {
+                        member_id = args[0].replace(/[^0-9\.]+/g, '');
+                        if (!(member_id in userlist)) {
                             message.reply('錯誤的成員名稱');
                             return;
                         }
-                        statusandreply(message, memberid)
+                        statusandreply(message, member_id)
                     }
                     else {
                         message.reply('請以<!status> 或 <!status @成員名稱> 的形式呼叫');
@@ -320,14 +283,14 @@ client.on('message', async message => {
             else if (command === '報名' || command === '選組') {
                 try {
                     var newGroup
-                    var memberid
+                    var member_id
                     if (args.length == 1) {
                         newGroup = args[0];
-                        memberid = message.author.id;
+                        member_id = message.author.id;
                     }
                     else if (args.length == 2) {
-                        memberid = args[0].replace(/[^0-9\.]+/g, '');
-                        if (!(memberid in userlist)) {
+                        member_id = args[0].replace(/[^0-9\.]+/g, '');
+                        if (!(member_id in userlist)) {
                             throw new Error('錯誤的成員名稱!');
                         }
                         newGroup = args[1];
@@ -358,7 +321,7 @@ client.on('message', async message => {
                     var Dtable = await gapi.getDemageTable(chlist[message.channel.id]);
                     var row = 0;
                     for (var i = 0; i < Dtable.length; i++) {
-                        if (Dtable[i][0] == userlist[memberid][0]) row = i
+                        if (Dtable[i][0] == userlist[member_id][0]) row = i
                     }
                     if (row == 0) {
                         throw new Error('查無此人')
@@ -675,12 +638,12 @@ client.on('message', async message => {
                 "color": 1500903,
                 "timestamp": "2019-12-21T02:02:33.417Z",
                 "image": {
-                    "url": "https://imgur.com/dEBTCu6.jpg" //takagi
+                    "url": "https://imgur.com/ubDWI7j.jpg" //takagi
 
                 },
                 "author": {
-                    "name": "綿木同學",
-                    "icon_url": "https://imgur.com/fozYyuU.jpg"
+                    "name": "Hayasaka AI",
+                    "icon_url": "https://imgur.com/tdhYU6z.jpg"
                 },
                 "fields": [
                     {
@@ -805,6 +768,29 @@ async function statusandreply(message, memberid) {
     }
 }
 
+async function dofill(message, memberid, args, damage) {
+    if (isNaN(damage) || damage > 100000000) {
+        message.reply('傷害數值錯誤或過高!');
+        return;
+    }
+    let target = '';
+    let ps = '';
+    if (args.length >= 2) {
+        for (var i = 1; i < args.length; i++) {
+            arg = args[i].substring(0, 1);
+            // console.log(arg)
+            if (arg === '尾' || arg === '殘') {
+                ps = arg;
+            }
+            else if (arg === '1' || arg === '2' || arg === '3' || arg === '4' || arg === '5'
+                || arg === '一' || arg === '二' || arg === '三' || arg === '四' || arg === '五') {
+                target = arg;
+            }
+            else throw new Error('不正確的fill指令: ' + message.author.username + ':' + message.content)
+        }
+    }
+    await fillandreply(message, member_id, damage, target, ps);
+}
 
 async function fillandreply(message, memberid, demage, object, ps) {
     try {

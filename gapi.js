@@ -269,13 +269,14 @@ function toset(auth, sheetId, setRange, value) {
 }
 
 function getSheetName() {
-    var now = new Date();
-    month = now.getMonth() + 1;
-    date = now.getDate();
-    hour = now.getHours()
-
-    if (hour < 5) date -= 1;
-    return (month + '/' + date)
+    let now = new Date();
+    // 五點換日
+    now.setHours(now.getHours() - 5 )
+    const options = {
+        month: 'numeric', day: 'numeric',
+        timeZone: 'Asia/Taipei',
+    };
+    return new Intl.DateTimeFormat('zh-TW',options).format(now)
 }
 
 // function toupdate(auth) {
