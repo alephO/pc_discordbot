@@ -768,7 +768,7 @@ async function statusandreply(message, memberid) {
     }
 }
 
-async function dofill(message, memberid, args, damage) {
+async function dofill(message, member_id, args, damage) {
     if (isNaN(damage) || damage > 100000000) {
         message.reply('傷害數值錯誤或過高!');
         return;
