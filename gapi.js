@@ -265,7 +265,7 @@ function getTemplateID( auth, sheetId ){
                 reject(err);
                 return;
             }
-            for( st of res.sheets){
+            for( st of res.data.sheets){
                 let sp = st.properties;
                 if(sp.title.includes('基本表格')){
                     resolve(sp.sheetId);
