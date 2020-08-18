@@ -83,11 +83,20 @@ module.exports = {
                     resolve(data);
                 }
                 catch (err) {
-                    console.log('Failed to get damage table, err is ', err)
+                    console.log('Failed to get damage table, err is ', err);
                     if(err.message.includes("Unable to parse range")){
-                        console.log('Unable to parse range. Maybe sheet is not created')
+                        console.log('Unable to parse range. Maybe sheet is not created, trying to create one');
+                        try{
+                            sid = await getTemplateID(oauth, SSID);
+                            console.log('Template found, SID is ', sid);
+                            reject('Dup not implemented');
+                        }
+                        catch (err){
+                            reject(err)
+                        }
+                    } else{
+                        reject(err);
                     }
-                    reject(err);
                 }
             });
         });
@@ -245,7 +254,7 @@ function toget(auth, sheetId, getRange, mDim) {
     });
 }
 
-function createTodaySheet( auth, sheetId ){
+function getTemplateID( auth, sheetId ){
     return new Promise( function (resolve, reject) {
         const sheets = google.sheets({ version: 'v4', auth});
         sheets.spreadsheet.get({
@@ -258,20 +267,20 @@ function createTodaySheet( auth, sheetId ){
             }
             for( st of res.sheets){
                 let sp = st.properties;
-                let sid = -1;
                 if(sp.title == '基本表格'){
-                    sid = sp.sheetId;
-                }
-                if(sid == -1){
-                    reject('未找到基本表格');
+                    resolve(sp.sheetId);
                     return;
                 }
             }
-        }) ;
+            reject('未找到基本表格');
+            return;
+        });
     });
 }
 
-//function
+function dupSheet( auth, spreadsheetid, id){
+
+}
 
 function toset(auth, sheetId, setRange, value) {
     return new Promise(function (resolve, reject) {
