@@ -203,7 +203,7 @@ module.exports = {
                 }
                 catch (err) {
                     reject(err)
-                };
+                }
             });
         });
     }
@@ -267,7 +267,7 @@ function getTemplateID( auth, sheetId ){
             }
             for( st of res.sheets){
                 let sp = st.properties;
-                if(sp.title == '基本表格'){
+                if(sp.title.includes('基本表格')){
                     resolve(sp.sheetId);
                     return;
                 }
