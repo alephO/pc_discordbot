@@ -83,7 +83,10 @@ module.exports = {
                     resolve(data);
                 }
                 catch (err) {
-                    console.log('Failed to get damage table, err is ', err.message, '###')
+                    console.log('Failed to get damage table, err is ', err)
+                    if(err.message.include("Unable to parse range")){
+                        console.log('Unable to parse range. Maybe sheet is not created')
+                    }
                     reject(err);
                 }
             });
