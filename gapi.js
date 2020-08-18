@@ -83,6 +83,7 @@ module.exports = {
                     resolve(data);
                 }
                 catch (err) {
+                    console.log('Failed to get damage table, err is ', err)
                     reject(err);
                 }
             });
@@ -163,7 +164,7 @@ module.exports = {
                 try {
                     var oauth = await getauth(JSON.parse(content));
                     var sheetname = getSheetName()
-                    var data = await toget(oauth, SSID, sheetname + '!C41:G50', 'ROWS');
+                    var data = await  (oauth, SSID, sheetname + '!C41:G50', 'ROWS');
                     resolve(data);
                 }
                 catch (err) {
@@ -240,6 +241,34 @@ function toget(auth, sheetId, getRange, mDim) {
         });
     });
 }
+
+function createTodaySheet( auth, sheetId ){
+    return new Promise( function (resolve, reject) {
+        const sheets = google.sheets({ version: 'v4', auth});
+        sheets.spreadsheet.get({
+            spreadsheetId: sheetId
+        }, (err, res) => {
+            if(err){
+                console.log('get APU error: ' + err);
+                reject(err);
+                return;
+            }
+            for( st of res.sheets){
+                let sp = st.properties;
+                let sid = -1;
+                if(sp.title == '基本表格'){
+                    sid = sp.sheetId;
+                }
+                if(sid == -1){
+                    reject('未找到基本表格');
+                    return;
+                }
+            }
+        }) ;
+    });
+}
+
+//function
 
 function toset(auth, sheetId, setRange, value) {
     return new Promise(function (resolve, reject) {

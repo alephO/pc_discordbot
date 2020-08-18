@@ -103,15 +103,6 @@ const chlist = {
 }
 ```
 
-### - 調整時區
-- 因為bot會根據系統時間來決定填入的表格
-- 如果使用雲端虛擬機的服務 記得調整好時間
-- 以GCP的linux為例
-- > cd ~
-- > sudo cp /usr/share/zoneinfo/Asia/Taipei /etc/localtime  
-
-- 不確定系統時間為何的可以使用`date`來確認
-
 
 ### - 開始執行Bot
 
