@@ -83,7 +83,7 @@ module.exports = {
                     resolve(data);
                 }
                 catch (err) {
-                    console.log('Failed to get damage table, err is ', err)
+                    console.log('Failed to get damage table, err is ', err.message, '###')
                     reject(err);
                 }
             });
