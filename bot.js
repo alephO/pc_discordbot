@@ -9,6 +9,8 @@ var configDict = require('./config.json');
 // google sheet id
 const ssidlist = configDict.ssidlist
 const chlist = configDict.chlist
+// Taipei timezone is UTC+8
+const utc_offset = 8;
 
 const debug = 'debug' in configDict? configDict.debug: false;
 
@@ -1000,17 +1002,20 @@ String.format = function () {
 }
 
 function callefttime(baselinehour) {
-    var now = new Date();
+    const now = new Date();
+    let deadline_hour = 5 - utc_offset;
+    if( deadline_hour < 0 ){
+        deadline_hour += 24;
+    }
+    const deadline = new Date();
+    deadline.setUTCHours( deadline_hour, 0, 0 );
+    let subtract_in_ms = deadline - now;
+    if( subtract_in_ms < 0 ){
+        subtract_in_ms += 24 * 60 * 60 * 1000;
+    }
+    const subtract = new Date(subtract_in_ms);
 
-    year = now.getFullYear();
-    month = now.getMonth();
-    date = now.getDate();
-    hour = now.getHours();
-    if (hour > 5) date = date + 1;
-    var deadline = new Date(year, month, date, baselinehour)
-    var substract = new Date(deadline - now)
-
-    return (Math.floor(substract.getTime() / 3600000) + "小時" + substract.getUTCMinutes() + "分" + substract.getUTCSeconds() + "秒");
+    return (subtract.getUTCHours() + "小時" + substract.getUTCMinutes() + "分" + substract.getUTCSeconds() + "秒");
 }
 
 
