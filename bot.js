@@ -1015,7 +1015,7 @@ function callefttime(baselinehour) {
     }
     const subtract = new Date(subtract_in_ms);
 
-    return (subtract.getUTCHours() + "小時" + substract.getUTCMinutes() + "分" + substract.getUTCSeconds() + "秒");
+    return (subtract.getUTCHours() + "小時" + subtract.getUTCMinutes() + "分" + subtract.getUTCSeconds() + "秒");
 }
 
 
