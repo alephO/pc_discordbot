@@ -87,9 +87,11 @@ module.exports = {
                     if(err.message.includes("Unable to parse range")){
                         console.log('Unable to parse range. Maybe sheet is not created, trying to create one');
                         try{
-                            sid = await getTemplateID(oauth, SSID);
+                            const sid = await getTemplateID(oauth, SSID);
                             console.log('Template found, SID is ', sid);
-                            reject('Dup not implemented');
+                            await dupSheet(oauth, SSID, sid, 0, sheetname)
+                            var data = await toget(oauth, SSID, sheetname + '!A1:T33', 'ROWS');
+                            resolve(data);
                         }
                         catch (err){
                             reject(err)
@@ -278,8 +280,34 @@ function getTemplateID( auth, sheetId ){
     });
 }
 
-function dupSheet( auth, spreadsheetid, id){
+function dupSheet( auth, spreadsheetid, sheetid, idx, name ){
+    return new Promise(function (resolve, reject) {
+        const sheets = google.sheets({ version: 'v4', auth });
 
+        let reqs = [];
+        reqs.push({
+            updateSpreadsheetProperties: {
+                sourceSheetId: sheetid,
+                insertSheetIndex: idx,
+                newSheetName: name
+            },
+        });
+
+        sheets.spreadsheets.batchUpdate({
+            spreadsheetId: spreadsheetid,
+            resource: {
+                requests: reqs
+            }
+        }, (err, res) => {
+            if (err) {
+                console.log('The API returned an error: ' + err);
+                reject(err);
+            }
+            else
+                // console.log(res);
+                resolve(res.replies[0]);
+        });
+    });
 }
 
 function toset(auth, sheetId, setRange, value) {
