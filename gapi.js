@@ -87,9 +87,11 @@ module.exports = {
                     if(err.message.includes("Unable to parse range")){
                         console.log('Unable to parse range. Maybe sheet is not created, trying to create one');
                         try{
-                            const sid = await getTemplateID(oauth, SSID);
+                            const res = await getTemplateID(oauth, SSID);
+                            const sid = res.sheetId;
+                            const idx = res.idx;
                             console.log('Template found, SID is ', sid);
-                            await dupSheet(oauth, SSID, sid, 0, sheetname)
+                            await dupSheet(oauth, SSID, sid, idx, sheetname)
                             var data = await toget(oauth, SSID, sheetname + '!A1:T33', 'ROWS');
                             resolve(data);
                         }
@@ -268,15 +270,21 @@ function getTemplateID( auth, sheetId ){
                 reject(err);
                 return;
             }
+            let sheetId = -1;
+            let priorIdx = -1;
             for( st of res.data.sheets){
                 let sp = st.properties;
-                if(sp.title.includes('基本表格')){
-                    resolve(sp.sheetId);
-                    return;
+                if(sp.title==='基本表格'){
+                    sheetId=sp.sheetId;
+                } else if(sp.title.match(/\d+\/\d+/g)){
+                    priorIdx=sp.index;
                 }
             }
-            reject('未找到基本表格');
-            return;
+            if(priorIdx===-1){
+                reject('未找到基本表格');
+            } else {
+                resolve({sheetId:sheetId,idx:priorIdx+1});
+            }
         });
     });
 }
