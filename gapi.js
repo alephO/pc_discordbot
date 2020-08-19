@@ -280,7 +280,7 @@ function getTemplateID( auth, sheetId ){
                     priorIdx=sp.index;
                 }
             }
-            if(priorIdx===-1){
+            if(sheetId===-1){
                 reject('未找到基本表格');
             } else {
                 resolve({sheetId:sheetId,idx:priorIdx+1});
