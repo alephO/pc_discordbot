@@ -306,7 +306,7 @@ function dupSheet( auth, spreadsheetid, sheetid, idx, name ){
             }
             else
                 // console.log(res);
-                resolve(res.replies[0]);
+                resolve(res);
         });
     });
 }
