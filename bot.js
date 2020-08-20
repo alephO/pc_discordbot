@@ -768,7 +768,7 @@ async function reply_progress(message){
         const repmsg = {
             content : flds.join('\n\n')
         };
-        console.log('rep is ', flds)
+        console.log('rep is ', repmsg)
         message.reply(repmsg);
     }
     catch (err) {
