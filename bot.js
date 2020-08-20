@@ -757,20 +757,14 @@ async function reply_progress(message){
         for(let i = 0; i < table.length; i ++){
             const idx = current_r + i;
             const slice = table[i];
-            const ttl = '第' + idx + '周';
-            let des = '';
+            let des = '第' + idx + '周:\n';
             for(let j = 1; j < 5; j++){
                 des += j + '王: ' + slice[i] + ', ';
             }
-            flds.push({title:ttl, description:des});
+            flds.push( des );
         }
         const repmsg = {
-            "embed":
-                {
-                    "title": "進度",
-                    "color": 5301186,
-                    "fields": flds,
-                }
+            "content" : flds.join('\n\n')
         };
 
         message.reply(repmsg);
