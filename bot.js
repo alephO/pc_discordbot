@@ -760,7 +760,7 @@ async function reply_progress(message){
             const slice = table[i];
             let des = '第' + idx + '周:\n';
             for(let j = 1; j < 5; j++){
-                des += j + '王: ' + slice[i] + ', ';
+                des += j + '王: ' + slice[j] + ', ';
             }
             flds.push( des );
         }
@@ -768,7 +768,7 @@ async function reply_progress(message){
         const repmsg = {
             "content" : flds.join('\n\n')
         };
-
+        console.log('rep is ', flds)
         message.reply(repmsg);
     }
     catch (err) {
