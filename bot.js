@@ -758,15 +758,21 @@ async function reply_progress(message){
         for(let i = 0; i < table.length; i ++){
             const idx = current_r + i;
             const slice = table[i];
-            let des = '第' + idx + '周:\n';
+            let ttl = '第' + idx + '周:\n';
+            let des = '';
             for(let j = 1; j < 5; j++){
                 des += j + '王: ' + slice[j] + ', ';
             }
-            flds.push( des );
+            flds.push( {name:ttl, value:des} );
         }
         console.log('flds is ', flds)
         const repmsg = {
-            content : flds.join('\n\n')
+            "embed":
+                {
+                    "title": memberName + " 今日狀態",
+                    "color": 5301186,
+                    "fields": flds
+                }
         };
         console.log('rep is ', repmsg)
         message.reply(repmsg);
