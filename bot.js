@@ -769,7 +769,7 @@ async function reply_progress(message){
         const repmsg = {
             "embed":
                 {
-                    "title": "當前進度",
+                    "title": "現在是第"+current_r+'周',
                     "color": 5301186,
                     "fields": flds
                 }

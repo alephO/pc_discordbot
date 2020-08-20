@@ -107,9 +107,10 @@ module.exports = {
                 }
                 try {
                     const oauth = await getauth(JSON.parse(content));
-                    const range='報刀表!A' + (current_r + 1) + ':F' + (largest_r + 1);
+                    const range='報刀表!A' + (current_r + 1) + ':H' + (largest_r + 1);
                     console.log('range is ', range)
-                    const data = await toget(oauth, SSID, range, 'ROWS');
+                    const data = await toget(oauth, SSID, range, 'ROWS',
+                              'FORMATTED_VALUE');
                     resolve(data);
                 }
                 catch (err) {
@@ -290,14 +291,14 @@ function getauth(credentials) {
  * @see https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
  * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
  */
-function toget(auth, sheetId, getRange, mDim) {
+function toget(auth, sheetId, getRange, mDim, valueRenderOption=null) {
     return new Promise(function (resolve, reject) {
         const sheets = google.sheets({ version: 'v4', auth });
         sheets.spreadsheets.values.get({
             spreadsheetId: sheetId,
             range: getRange,
             majorDimension: mDim,
-            valueRenderOption: 'UNFORMATTED_VALUE'
+            valueRenderOption: valueRenderOption==null? 'UNFORMATTED_VALUE' : valueRenderOption
         }, (err, res) => {
             if (err) {
                 console.log('The API returned an error: ' + err);
