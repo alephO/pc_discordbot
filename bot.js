@@ -753,6 +753,7 @@ async function reply_progress(message){
         const current_r = progress_property.current_r;
         const largest_r = progress_property.largest_r;
         const table=await gapi.getProgressTable(chlist[message.channel.id], current_r, largest_r);
+        console.log('table is ', table)
         let flds = [];
         for(let i = 0; i < table.length; i ++){
             const idx = current_r + i;
@@ -763,6 +764,7 @@ async function reply_progress(message){
             }
             flds.push( des );
         }
+        console.log('flds is ', flds)
         const repmsg = {
             "content" : flds.join('\n\n')
         };

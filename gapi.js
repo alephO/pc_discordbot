@@ -108,6 +108,7 @@ module.exports = {
                 try {
                     const oauth = await getauth(JSON.parse(content));
                     const range='報刀表!A' + current_r + ':F' + largest_r;
+                    console.log('range is ', range)
                     const data = await toget(oauth, SSID, range, 'ROWS');
                     resolve(data);
                 }
