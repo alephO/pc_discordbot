@@ -750,13 +750,13 @@ client.login(token);
 async function reply_progress(message){
     try {
         const progress_property = await gapi.getProgressProperty(chlist[message.channel.id]);
-
+        console.log('pp is ', progress_property);
         const repmsg = {
             "embed":
                 {
                     "title": "進度",
                     "color": 5301186,
-                    "fields": progress_property
+                    "fields": [{name:'ans', value:progress_property}]
                 }
         };
 
