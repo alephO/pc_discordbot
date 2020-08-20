@@ -760,7 +760,7 @@ async function reply_progress(message){
             const slice = table[i];
             let ttl = '第' + idx + '周:\n';
             let des = '';
-            for(let j = 1; j < 5; j++){
+            for(let j = 1; j < 6; j++){
                 des += j + '王: ' + slice[j] + ', ';
             }
             flds.push( {name:ttl, value:des} );
@@ -769,7 +769,7 @@ async function reply_progress(message){
         const repmsg = {
             "embed":
                 {
-                    "title": memberName + " 今日狀態",
+                    "title": "當前進度",
                     "color": 5301186,
                     "fields": flds
                 }
