@@ -79,7 +79,7 @@ module.exports = {
                 try {
                     const oauth = await getauth(JSON.parse(content));
                     const sheet_name = '報刀表'
-                    let data = await toget(oauth, SSID, sheet_name + '!H1:H5', 'ROWS');
+                    let data = await toget(oauth, SSID, sheet_name + '!G1:G5', 'ROWS');
                     let largest_round = parseInt(data[1]);
                     if(isNaN(largest_round)){
                         largest_round = 1;
@@ -107,7 +107,7 @@ module.exports = {
                 }
                 try {
                     const oauth = await getauth(JSON.parse(content));
-                    const range='報刀表!A' + (current_r + 1) + ':H' + (largest_r + 1);
+                    const range='報刀表!A' + (current_r + 1) + ':G' + (largest_r + 1);
                     console.log('range is ', range)
                     const data = await toget(oauth, SSID, range, 'ROWS',
                               'FORMATTED_VALUE');
