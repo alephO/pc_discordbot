@@ -81,8 +81,35 @@ module.exports = {
                     const sheet_name = '報刀表'
                     let data = await toget(oauth, SSID, sheet_name + '!H1:H5', 'ROWS');
                     let largest_round = data[1];
+                    if(isNaN(largest_round)){
+                        largest_round = 1;
+                    }
                     let current_round = data[4];
+                    if(isNaN(current_round)){
+                        current_round = 1;
+                    }
                     resolve({largest_r:largest_round,current_r:current_round});
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        });
+    },
+
+    getProgressTable: function (SSID, current_r, largest_r ) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile('credentials.json', async (err, content) => {
+                if (err) {
+                    console.log('Error loading client secret file:', err);
+                    reject(err);
+                    return;
+                }
+                try {
+                    const oauth = await getauth(JSON.parse(content));
+                    const range='報刀表!A' + current_r + ':F' + largest_r;
+                    const data = await toget(oauth, SSID, range, 'ROWS');
+                    resolve(data);
                 }
                 catch (err) {
                     reject(err);

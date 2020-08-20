@@ -750,13 +750,26 @@ client.login(token);
 async function reply_progress(message){
     try {
         const progress_property = await gapi.getProgressProperty(chlist[message.channel.id]);
-        console.log('pp is ', progress_property);
+        const current_r = progress_property.current_r;
+        const largest_r = progress_property.largest_r;
+        const table=await gapi.getProgressTable(chlist[message.channel.id], current_r, largest_r);
+        let flds = [];
+        for(let i = 0; i < table.length; i ++){
+            const idx = current_r + i;
+            const slice = table[i];
+            const ttl = '第' + idx + '周';
+            let des = '';
+            for(let j = 1; j < 5; j++){
+                des += j + '王: ' + slice[i] + ', ';
+            }
+            flds.push({title:ttl, description:des});
+        }
         const repmsg = {
             "embed":
                 {
                     "title": "進度",
                     "color": 5301186,
-                    "fields": [{name:'ans', value:progress_property}]
+                    "fields": flds,
                 }
         };
 
