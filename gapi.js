@@ -68,6 +68,29 @@ module.exports = {
     //     });
     // },
 
+    getProgressProperty: function (SSID) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile('credentials.json', async (err, content) => {
+                if (err) {
+                    console.log('Error loading client secret file:', err);
+                    reject(err);
+                    return;
+                }
+                try {
+                    const oauth = await getauth(JSON.parse(content));
+                    const sheet_name = '報刀表'
+                    let data = await toget(oauth, SSID, sheet_name + '!H1:H5', 'ROWS');
+                    let largest_round = data[1];
+                    let current_round = data[4];
+                    resolve({largest_r:largest_round,current_r:current_round});
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        });
+    },
+
     getDemageTable: function (SSID) {
         return new Promise(function (resolve, reject) {
             fs.readFile('credentials.json', async (err, content) => {

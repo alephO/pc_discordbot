@@ -628,6 +628,11 @@ client.on('message', async message => {
                 return;
 
 
+            } else if (command === '排刀進度' || command === '進度' || command==='where'){
+                queue.push(async () => {
+                    await reply_progress(message);
+                })
+                return;
             }
         }
 
@@ -672,22 +677,22 @@ client.on('message', async message => {
                         "name": "<!查刀>",
                         "value": "查看該頻道公會每人所剩刀數和已輸出的目標"
                     },
-                    {
-                        "name": "<!分組> 或 <!分組說明>",
-                        "value": "查看該頻道公會當日分組說明"
-                    },
-                    {
-                        "name": "<!選組 組名> 或 <!報名 組名>",
-                        "value": "為呼叫者登記當日組別 ex: !選組 A"
-                    },
-                    {
-                        "name": "<!選組 @成員 組名> 或 <!報名 @成員 組名>",
-                        "value": "為tag的成員登記當日組別 ex: !選組 @蒼蘭 A"
-                    },
-                    {
-                        "name": "<!查組>",
-                        "value": "查看該頻道公會每組報名人數及名單"
-                    },
+                    // {
+                    //     "name": "<!分組> 或 <!分組說明>",
+                    //     "value": "查看該頻道公會當日分組說明"
+                    // },
+                    // {
+                    //     "name": "<!選組 組名> 或 <!報名 組名>",
+                    //     "value": "為呼叫者登記當日組別 ex: !選組 A"
+                    // },
+                    // {
+                    //     "name": "<!選組 @成員 組名> 或 <!報名 @成員 組名>",
+                    //     "value": "為tag的成員登記當日組別 ex: !選組 @蒼蘭 A"
+                    // },
+                    // {
+                    //     "name": "<!查組>",
+                    //     "value": "查看該頻道公會每組報名人數及名單"
+                    // },
                     {
                         "name": "<!閃退> 或 <!crashlist>",
                         "value": "查看該頻道公會當日閃退人員清單"
@@ -700,10 +705,10 @@ client.on('message', async message => {
                         "name": "<!url> 或<!表單>",
                         "value": "查看該頻道公會的傷害紀錄表"
                     },
-                    {
-                        "name": "<!集刀說明>",
-                        "value": "取得詳細集刀指令"
-                    }
+                    // {
+                    //     "name": "<!集刀說明>",
+                    //     "value": "取得詳細集刀指令"
+                    // }
                 ]
             };
             message.channel.send({ embed });
@@ -742,6 +747,27 @@ client.on('message', async message => {
 client.login(token);
 
 /***************************************/
+async function reply_progress(message){
+    try {
+        const progress_property = await gapi.getProgressProperty(chlist[message.channel.id]);
+
+        const repmsg = {
+            "embed":
+                {
+                    "title": "進度",
+                    "color": 5301186,
+                    "fields": progress_property
+                }
+        };
+
+        message.reply(repmsg);
+    }
+    catch (err) {
+        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+        console.log(err)
+        message.reply('錯誤訊息: ' + err.message);
+    }
+}
 
 
 async function statusandreply(message, memberid) {
