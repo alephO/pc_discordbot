@@ -676,6 +676,45 @@ client.on('message', async message => {
                     }
                 })
                 return;
+            } else if (command === '報' || command.match(/^報\d王/g) ){
+                queue.push(async () => {
+                    try{
+                        await updatePpIfRequired();
+                        let member_id = message.author.id;
+                        let target = -1;
+                        let round = current_r;
+                        if( command=='報' ){
+                            target = parseInt(args[0]);
+                            args.shift();
+                        } else {
+                            let pattern = /^報(\d)王$/g;
+                            let tag = pattern.exec(command);
+                            target = parseInt(tag[1]);
+                        }
+                        if ( isNaN(target) || target < 1 || target > 5 ) {
+                            message.reply('目標錯誤! 格式<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]>');
+                            return;
+                        }
+                        for (const arg of args) {
+                            if (arg.startsWith('<')) {
+                                member_id = arg.replace(/[^0-9\.]+/g, '');
+                            }
+                            else if (arg.match(/\d+[周週]/g)) {
+                                let pattern = /^(\d+)[周週]$/g;
+                                let tag = pattern.exec(arg);
+                                round = parseInt(tag[1]);
+                            }
+                            else throw new Error('不正確的報刀指令: ' + message.author.username + ':' + message.content)
+                        }
+                        await uppdateProgress(message,newRound);
+                    }
+                    catch (err){
+                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                        console.log(err)
+                        message.reply('錯誤訊息: ' + err.message);
+                    }
+                })
+                return;
             }
 
         }
@@ -759,11 +798,11 @@ client.on('message', async message => {
                     },
                     {
                         "name": "<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]>",
-                        "value": "報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是為aleph0報第13周的五王"
+                        "value": "報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是幫aleph0取消第13周的五王"
                     },
                     {
                         "name": "<!取消number王 [x周] [@成員]> 或<!取消 number [x周] [@成員]>",
-                        "value": "取消報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是為aleph0報第13周的五王"
+                        "value": "取消報刀 []内是可選的 ex:!報 2 是取消現在這一周的二王 !報 5 13周 @aleph0 是幫aleph0取消第13周的五王"
                     },
                     // {
                     //     "name": "<!集刀說明>",
@@ -886,6 +925,57 @@ async function uppdateCurrentRound(message, newRound){
         message.reply('錯誤訊息: ' + err.message);
     }
 
+
+}
+
+async function uppdateProgress(message, memberid, round, target, del){
+    try {
+        await updatePpIfRequired(message);
+
+
+        //console.log('new round is ' + newRound);
+        const sheetName = '報刀表';
+
+
+        let inCharge = await gapi.getInCharge(chlist[message.channel.id],round,target);
+        // dataLst = []
+        // dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
+        //
+        // dataLst.push({
+        //     range:sheetName + '!A' + (newRound + 1),
+        //     values:[[newRound]]
+        // });
+        // dataLst.push({
+        //     range:sheetName + '!G' + (newRound + 1),
+        //     values:[[1]],
+        // })
+        //
+        // //console.log(dataLst);
+        // await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+        //
+        // current_r = newRound;
+        // if(current_r>largest_r){
+        //     largest_r = current_r;
+        // }
+
+        var repmsg = {
+            "embed":
+                {
+                    "title": "更新",
+                    "color": 5301186,
+                    "fields": [ { name:'當前',value:inCharge } ]
+                }
+        };
+        //console.log(repmsg);
+        // console.log(repmsg) //obj
+
+        message.reply(repmsg);
+    }
+    catch (err) {
+        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+        console.log(err)
+        message.reply('錯誤訊息: ' + err.message);
+    }
 
 }
 

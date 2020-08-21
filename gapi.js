@@ -100,6 +100,32 @@ module.exports = {
         });
     },
 
+    getInCharge: function (SSID, round, target) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile('credentials.json', async (err, content) => {
+                if (err) {
+                    console.log('Error loading client secret file:', err);
+                    reject(err);
+                    return;
+                }
+                try {
+                    const oauth = await getauth(JSON.parse(content));
+                    const sheet_name = '報刀表'
+                    const column_dict= {1:'B',2:'C',3:'D',4:'E',5:'F'}
+                    const idy = round + 1;
+                    let data = await toget(oauth, SSID, sheet_name + '!' + column_dict[target] + idy, 'ROWS');
+
+                    console.log('getInCharge: data ', data);
+
+                    resolve(data[0]);
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        });
+    },
+
     getProgressTable: function (SSID, current_r, largest_r ) {
         return new Promise(function (resolve, reject) {
             fs.readFile('credentials.json', async (err, content) => {
