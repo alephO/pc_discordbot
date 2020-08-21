@@ -659,8 +659,13 @@ client.on('message', async message => {
                         if(command=='周'){
                             newRound = parseInt(args[0]);
                         } else {
-                            let tag = command.match(/^(\d+)周$/g )
+                            let pattern = /^(\d+)周$/g;
+                            let tag = pattern.exec(command);
                             newRound = parseInt(tag[1]);
+                        }
+                        if ( isNaN(newRound) || newRound > 200 ) {
+                            message.reply('周數錯誤或過高!');
+                            return;
                         }
                         await uppdateCurrentRound(message,newRound);
                     }
