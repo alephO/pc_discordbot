@@ -39,7 +39,7 @@ function updatePpIfRequired(message){
         const progress_property = gapi.getProgressProperty(chlist[message.channel.id]);
         current_r = progress_property.current_r;
         largest_r = progress_property.largest_r;
-        console.log('Progress value updated');
+        console.log('Progress value updated. Current is ' + current_r + 'largest is' + largest_r);
     }
 }
 
@@ -833,6 +833,7 @@ async function reply_progress(message){
 async function uppdateCurrentRound(message, newRound){
     try {
         updatePpIfRequired(message);
+        console.log('new round is ' + newRound);
         const sheetName = '報刀表';
         dataLst = []
         dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
@@ -849,7 +850,7 @@ async function uppdateCurrentRound(message, newRound){
                 {
                     "title": "更新",
                     "color": 5301186,
-                    "fields": [{name:'當前周',value:newRound}]
+                    "fields": [ { name:'當前周',value:newRound } ]
                 }
         };
         console.log(repmsg);
