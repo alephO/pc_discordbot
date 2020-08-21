@@ -931,45 +931,47 @@ async function uppdateCurrentRound(message, newRound){
 async function uppdateProgress(message, memberid, round, target, del){
     try {
         await updatePpIfRequired(message);
-
-
+        const column_dict= {1:'B',2:'C',3:'D',4:'E',5:'F'}
         //console.log('new round is ' + newRound);
         const sheetName = '報刀表';
-
+        const memberName = userlist[memberid][0]
 
         let inCharge = await gapi.getInCharge(chlist[message.channel.id],round,target);
-        // dataLst = []
-        // dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
-        //
-        // dataLst.push({
-        //     range:sheetName + '!A' + (newRound + 1),
-        //     values:[[newRound]]
-        // });
-        // dataLst.push({
-        //     range:sheetName + '!G' + (newRound + 1),
-        //     values:[[1]],
-        // })
-        //
-        // //console.log(dataLst);
-        // await gapi.fillBatch(dataLst, chlist[message.channel.id]);
-        //
-        // current_r = newRound;
-        // if(current_r>largest_r){
-        //     largest_r = current_r;
-        // }
+        if(del){
+            if(inCharge===''){
+                message.reply('目標位置已經為空，不需要取消: ');
+                return;
+            } else if (inCharge!=memberName){
+                message.reply('目標位置的用戶是 ' + inCharge + ' 如果想取消 要加上@用戶');
+                return;
+            }
+            dataLst = []
+            const idy = round + 1;
+            const range = sheetName + '!' + column_dict[target] + idy;
+            dataLst.push({range:range, values:[['']]});
+            await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+        } else {
+            if(!(inCharge==='')){
+                message.reply('目標位置現在已經被報過 用戶是 ' + inCharge);
+                return;
+            }
+            dataLst = []
 
-        var repmsg = {
-            "embed":
-                {
-                    "title": "更新",
-                    "color": 5301186,
-                    "fields": [ { name:'當前',value:'boom' + inCharge } ]
-                }
-        };
-        //console.log(repmsg);
-        // console.log(repmsg) //obj
+            const idy = round + 1;
+            const range = sheetName + '!' + column_dict[target] + idy;
+            dataLst.push({range:range, values:[[memberName]]});
+            dataLst.push({
+                range:sheetName + '!A' + (round + 1),
+                values:[[round]]
+            });
+            dataLst.push({
+                range:sheetName + '!G' + (round + 1),
+                values:[[1]],
+            })
+            await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+        }
 
-        message.reply(repmsg);
+        await reply_progress(message);
     }
     catch (err) {
         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
