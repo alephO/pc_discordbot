@@ -35,9 +35,11 @@ let largest_r = -1;
 
 function updatePpIfRequired(message){
     if( current_r===-1 || largest_r===-1 ){
+        console.log('Update progress value');
         const progress_property = gapi.getProgressProperty(chlist[message.channel.id]);
         current_r = progress_property.current_r;
         largest_r = progress_property.largest_r;
+        console.log('Progress value updated');
     }
 }
 
@@ -839,6 +841,7 @@ async function uppdateCurrentRound(message, newRound){
         // var status = await getstatus(table, memberName);
         // console.log(status) //obj
 
+        console.log(dataLst);
         await gapi.fillBatch(dataLst, chlist[message.channel.id]);
 
         var repmsg = {
@@ -849,6 +852,7 @@ async function uppdateCurrentRound(message, newRound){
                     "fields": [{name:'當前周',value:newRound}]
                 }
         };
+        console.log(repmsg);
         // console.log(repmsg) //obj
 
         message.reply(repmsg);
