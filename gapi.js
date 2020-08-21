@@ -113,7 +113,7 @@ module.exports = {
                     const sheet_name = '報刀表'
                     const column_dict= {1:'B',2:'C',3:'D',4:'E',5:'F'}
                     const idy = round + 1;
-                    let data = await toget(oauth, SSID, sheet_name + '!' + column_dict[target] + idy, 'ROWS');
+                    let data = await toget(oauth, SSID, sheet_name + '!' + column_dict[target] + idy, 'ROWS', 'FORMATTED_VALUE');
 
                     console.log('getInCharge: data ', data);
 
