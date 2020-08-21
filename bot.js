@@ -841,10 +841,20 @@ async function uppdateCurrentRound(message, newRound){
         const sheetName = '報刀表';
         dataLst = []
         dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
-        // memberName = userlist[memberid][0];
-        // var table = await gapi.getDemageTable(chlist[message.channel.id]); //取得當天排刀表 userlist[memberid][1]
-        // var status = await getstatus(table, memberName);
-        // console.log(status) //obj
+
+        dataLst.push({
+            range:sheetName + '!A' + (current_r + 1),
+            value:[[current_r]]
+        });
+        dataLst.push({
+            range:sheetName + '!G' + (current_r + 1),
+            value:[[1]],
+        })
+
+
+        if(current_r>largest_r){
+            largest_r = current_r;
+        }
 
         console.log(dataLst);
         await gapi.fillBatch(dataLst, chlist[message.channel.id]);
