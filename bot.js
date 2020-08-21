@@ -33,7 +33,7 @@ var channelid = '' //channel to broadcast from direct message
 let current_r = -1;
 let largest_r = -1;
 
-function updatePpIfRequired(){
+function updatePpIfRequired(message){
     if( current_r===-1 || largest_r===-1 ){
         const progress_property = gapi.getProgressProperty(chlist[message.channel.id]);
         current_r = progress_property.current_r;
@@ -795,7 +795,7 @@ client.login(token);
 /***************************************/
 async function reply_progress(message){
     try {
-        updatePpIfRequired();
+        updatePpIfRequired(message);
         const table=await gapi.getProgressTable(chlist[message.channel.id], current_r, largest_r);
         //console.log('table is ', table)
         let flds = [];
@@ -830,7 +830,7 @@ async function reply_progress(message){
 
 async function uppdateCurrentRound(message, newRound){
     try {
-        updatePpIfRequired();
+        updatePpIfRequired(message);
         const sheetName = '報刀表';
         dataLst = []
         dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
