@@ -652,14 +652,14 @@ client.on('message', async message => {
                     }
                 })
                 return;
-            } else if (command === '周' || command.match(/^\d+周$/g) ){
+            } else if (command === '周' || command === '週' || command.match(/^\d+[周週]$/g) ){
                 queue.push(async () => {
                     try{
                         let newRound = -1;
-                        if(command=='周'){
+                        if(command=='周' || command=='週'){
                             newRound = parseInt(args[0]);
                         } else {
-                            let pattern = /^(\d+)周$/g;
+                            let pattern = /^(\d+)[周週]$/g;
                             let tag = pattern.exec(command);
                             newRound = parseInt(tag[1]);
                         }
