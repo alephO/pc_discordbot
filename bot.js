@@ -676,7 +676,7 @@ client.on('message', async message => {
                     }
                 })
                 return;
-            } else if (command === '報' || command.match(/^報\d王/g) ){
+            } else if (command === '報' || command.match(/^報\d王/g) || command === '取消' || command.match(/^取消\d王/g)){
                 queue.push(async () => {
                     try{
                         console.log(message.content);
@@ -684,13 +684,13 @@ client.on('message', async message => {
                         let member_id = message.author.id;
                         let target = -1;
                         let round = current_r;
-                        if( command=='報' ){
+                        if( command=='報' || command=='取消'){
                             target = parseInt(args[0]);
                             args.shift();
                         } else {
-                            let pattern = /^報(\d)王$/g;
+                            let pattern = /^(報|取消)(\d)王$/g;
                             let tag = pattern.exec(command);
-                            target = parseInt(tag[1]);
+                            target = parseInt(tag[2]);
                         }
                         if ( isNaN(target) || target < 1 || target > 5 ) {
                             message.reply('目標錯誤! 格式<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]>');
@@ -708,7 +708,11 @@ client.on('message', async message => {
                             }
                             else throw new Error('不正確的報刀指令: ' + message.author.username + ':' + message.content)
                         }
-                        await uppdateProgress(message,member_id,round,target,false);
+                        del = false;
+                        if(command.startsWith('取消')){
+                            del=true;
+                        }
+                        await uppdateProgress(message,member_id,round,target,del);
                     }
                     catch (err){
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
