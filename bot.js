@@ -963,7 +963,7 @@ async function uppdateProgress(message, memberid, round, target, del){
                 {
                     "title": "更新",
                     "color": 5301186,
-                    "fields": [ { name:'當前',value:inCharge[0] } ]
+                    "fields": [ { name:'當前',value:inCharge } ]
                 }
         };
         //console.log(repmsg);

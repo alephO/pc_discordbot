@@ -117,7 +117,7 @@ module.exports = {
 
                     console.log('getInCharge: data ', data);
 
-                    resolve(data[0]);
+                    resolve(data==undefined?'':data[0][0]);
                 }
                 catch (err) {
                     reject(err);
