@@ -864,7 +864,11 @@ async function reply_progress(message){
             let ttl = '第' + idx + '周:\n';
             let des = '';
             for(let j = 1; j < 6; j++){
-                des += j + '王: ' + slice[j] + ', ';
+                let members = slice[j]
+                if(members===undefined){
+                    members='';
+                }
+                des += j + '王: ' + members + ', ';
             }
             flds.push( {name:ttl, value:des} );
         }
