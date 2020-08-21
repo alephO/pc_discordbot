@@ -661,6 +661,7 @@ client.on('message', async message => {
                             let tag = command.match(/^(\d+)周$/g )
                             newRound = parseInt(tag[1]);
                         }
+                        await uppdateCurrentRound(message,newRound);
                     }
                     catch (err){
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
