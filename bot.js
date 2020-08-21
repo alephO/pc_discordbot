@@ -756,7 +756,15 @@ client.on('message', async message => {
                     {
                         "name": "<!周 number> 或<number周>",
                         "value": "更新當前周數"
-                    }
+                    },
+                    {
+                        "name": "<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]>",
+                        "value": "報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是為aleph0報第13周的五王"
+                    },
+                    {
+                        "name": "<!取消number王 [x周] [@成員]> 或<!取消 number [x周] [@成員]>",
+                        "value": "取消報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是為aleph0報第13周的五王"
+                    },
                     // {
                     //     "name": "<!集刀說明>",
                     //     "value": "取得詳細集刀指令"
@@ -837,7 +845,7 @@ async function reply_progress(message){
 async function uppdateCurrentRound(message, newRound){
     try {
         await updatePpIfRequired(message);
-        console.log('new round is ' + newRound);
+        //console.log('new round is ' + newRound);
         const sheetName = '報刀表';
         dataLst = []
         dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
@@ -851,7 +859,7 @@ async function uppdateCurrentRound(message, newRound){
             values:[[1]],
         })
 
-        console.log(dataLst);
+        //console.log(dataLst);
         await gapi.fillBatch(dataLst, chlist[message.channel.id]);
 
         current_r = newRound;
@@ -867,7 +875,7 @@ async function uppdateCurrentRound(message, newRound){
                     "fields": [ { name:'當前周',value:newRound } ]
                 }
         };
-        console.log(repmsg);
+        //console.log(repmsg);
         // console.log(repmsg) //obj
 
         message.reply(repmsg);
