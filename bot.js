@@ -37,6 +37,7 @@ function updatePpIfRequired(message){
     if( current_r===-1 || largest_r===-1 ){
         console.log('Update progress value');
         const progress_property = gapi.getProgressProperty(chlist[message.channel.id]);
+        console.log('progress_property '+progress_property);
         current_r = progress_property.current_r;
         largest_r = progress_property.largest_r;
         console.log('Progress value updated. Current is ' + current_r + 'largest is' + largest_r);
