@@ -679,6 +679,7 @@ client.on('message', async message => {
             } else if (command === '報' || command.match(/^報\d王/g) ){
                 queue.push(async () => {
                     try{
+                        console.log(message.content);
                         await updatePpIfRequired(message);
                         let member_id = message.author.id;
                         let target = -1;
@@ -695,6 +696,7 @@ client.on('message', async message => {
                             message.reply('目標錯誤! 格式<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]>');
                             return;
                         }
+                        console.log('args ',args);
                         for (const arg of args) {
                             if (arg.startsWith('<')) {
                                 member_id = arg.replace(/[^0-9\.]+/g, '');
@@ -970,6 +972,9 @@ async function uppdateProgress(message, memberid, round, target, del){
             })
             console.log('dataLst ', dataLst);
             await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+            if(round > largest_r){
+                largest_r = round;
+            }
         }
 
         console.log('wait reply')
