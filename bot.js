@@ -706,7 +706,7 @@ client.on('message', async message => {
                             }
                             else throw new Error('不正確的報刀指令: ' + message.author.username + ':' + message.content)
                         }
-                        await uppdateProgress(message,newRound);
+                        await uppdateProgress(message,member_id,round,target,false);
                     }
                     catch (err){
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
