@@ -843,21 +843,21 @@ async function uppdateCurrentRound(message, newRound){
         dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
 
         dataLst.push({
-            range:sheetName + '!A' + (current_r + 1),
-            value:[[current_r]]
+            range:sheetName + '!A' + (newRound + 1),
+            values:[[newRound]]
         });
         dataLst.push({
-            range:sheetName + '!G' + (current_r + 1),
-            value:[[1]],
+            range:sheetName + '!G' + (newRound + 1),
+            values:[[1]],
         })
-
-
-        if(current_r>largest_r){
-            largest_r = current_r;
-        }
 
         console.log(dataLst);
         await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+
+        current_r = newRound;
+        if(current_r>largest_r){
+            largest_r = current_r;
+        }
 
         var repmsg = {
             "embed":
