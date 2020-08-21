@@ -679,7 +679,7 @@ client.on('message', async message => {
             } else if (command === '報' || command.match(/^報\d王/g) ){
                 queue.push(async () => {
                     try{
-                        await updatePpIfRequired();
+                        await updatePpIfRequired(message);
                         let member_id = message.author.id;
                         let target = -1;
                         let round = current_r;
