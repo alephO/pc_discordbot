@@ -527,7 +527,7 @@ client.on('message', async message => {
                 return;
             }
 
-            else if (command === '報數' || command === '報') {
+            else if (command === '報數' ) {
                 queue.push(async () => {
                     try {
                         var tables = await gapi.getCollectingtable(chlist[message.channel.id]);
