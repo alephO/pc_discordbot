@@ -243,6 +243,26 @@ module.exports = {
         });
     },
 
+    fillBatch: function (dataLst, SSID) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile('credentials.json', async (err, content) => {
+                if (err) {
+                    console.log('Error loading client secret file:', err);
+                    reject(err);
+                    return;
+                }
+                try {
+                    var oauth = await getauth(JSON.parse(content));
+                    result = await toBatchSet(oauth, SSID, dataLst);
+                    resolve(result);
+                }
+                catch (err) {
+                    reject(err)
+                }
+            });
+        });
+    },
+
     fillin: function (range, value, SSID, sheetname) {
         return new Promise(function (resolve, reject) {
             fs.readFile('credentials.json', async (err, content) => {
@@ -386,6 +406,32 @@ function toset(auth, sheetId, setRange, value) {
             range: setRange,
             valueInputOption: 'RAW',
             resource,
+        }, (err, res) => {
+            if (err) {
+                console.log('The API returned an error: ' + err);
+                reject(err);
+            }
+            else
+                // console.log(res);
+                resolve(res);
+        });
+    });
+}
+
+function toBatchSet(auth, sheetId, dataLst ) {
+    return new Promise(function (resolve, reject) {
+        const sheets = google.sheets({ version: 'v4', auth });
+
+        sheets.spreadsheets.values.batchUpdate({
+            spreadsheetId: sheetId,
+
+            resource: {
+                // How the input data should be interpreted.
+                valueInputOption: 'RAW',
+                // The new values to apply to the spreadsheet.
+                data: dataLst,
+            },
+
         }, (err, res) => {
             if (err) {
                 console.log('The API returned an error: ' + err);

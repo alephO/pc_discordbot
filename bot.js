@@ -30,6 +30,17 @@ var userlist = {}
 var channelid = '' //channel to broadcast from direct message
 
 
+let current_r = -1;
+let largest_r = -1;
+
+function updatePpIfRequired(){
+    if( current_r===-1 || largest_r===-1 ){
+        const progress_property = gapi.getProgressProperty(chlist[message.channel.id]);
+        current_r = progress_property.current_r;
+        largest_r = progress_property.largest_r;
+    }
+}
+
 /************************************** */
 // 避免呼叫指令時間太相近造成衝突, 此為一個排隊機制
 var EventEmitter = require('events').EventEmitter;
@@ -628,12 +639,38 @@ client.on('message', async message => {
                 return;
 
 
-            } else if (command === '排刀進度' || command === '進度' || command==='where'){
+            } else if (command === '排刀進度' || command === '進度' || command==='where' || command==='progress'){
                 queue.push(async () => {
-                    await reply_progress(message);
+                    try {
+                        await reply_progress(message);
+                    }
+                    catch (err){
+                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                        console.log(err)
+                        message.reply('錯誤訊息: ' + err.message);
+                    }
+                })
+                return;
+            } else if (command === '周' || command.match(/^\d+周$/g) ){
+                queue.push(async () => {
+                    try{
+                        let newRound = -1;
+                        if(command=='周'){
+                            newRound = parseInt(args[0]);
+                        } else {
+                            let tag = command.match(/^(\d+)周$/g )
+                            newRound = parseInt(tag[1]);
+                        }
+                    }
+                    catch (err){
+                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                        console.log(err)
+                        message.reply('錯誤訊息: ' + err.message);
+                    }
                 })
                 return;
             }
+
         }
 
         /*****大眾功能*****/
@@ -705,6 +742,14 @@ client.on('message', async message => {
                         "name": "<!url> 或<!表單>",
                         "value": "查看該頻道公會的傷害紀錄表"
                     },
+                    {
+                        "name": "<!進度> 或<!where> 或<!progress>",
+                        "value": "查看該頻道公會的排刀進度"
+                    },
+                    {
+                        "name": "<!周 number> 或<number周>",
+                        "value": "更新當前周數"
+                    }
                     // {
                     //     "name": "<!集刀說明>",
                     //     "value": "取得詳細集刀指令"
@@ -749,11 +794,9 @@ client.login(token);
 /***************************************/
 async function reply_progress(message){
     try {
-        const progress_property = await gapi.getProgressProperty(chlist[message.channel.id]);
-        const current_r = progress_property.current_r;
-        const largest_r = progress_property.largest_r;
+        updatePpIfRequired();
         const table=await gapi.getProgressTable(chlist[message.channel.id], current_r, largest_r);
-        console.log('table is ', table)
+        //console.log('table is ', table)
         let flds = [];
         for(let i = 0; i < table.length; i ++){
             const idx = current_r + i;
@@ -765,7 +808,7 @@ async function reply_progress(message){
             }
             flds.push( {name:ttl, value:des} );
         }
-        console.log('flds is ', flds)
+        //console.log('flds is ', flds)
         const repmsg = {
             "embed":
                 {
@@ -774,7 +817,7 @@ async function reply_progress(message){
                     "fields": flds
                 }
         };
-        console.log('rep is ', repmsg)
+        //console.log('rep is ', repmsg)
         message.reply(repmsg);
     }
     catch (err) {
@@ -782,6 +825,40 @@ async function reply_progress(message){
         console.log(err)
         message.reply('錯誤訊息: ' + err.message);
     }
+}
+
+async function uppdateCurrentRound(message, newRound){
+    try {
+        updatePpIfRequired();
+        const sheetName = '報刀表';
+        dataLst = []
+        dataLst.push({range:sheetName + '!I5', values:[[newRound]]})
+        // memberName = userlist[memberid][0];
+        // var table = await gapi.getDemageTable(chlist[message.channel.id]); //取得當天排刀表 userlist[memberid][1]
+        // var status = await getstatus(table, memberName);
+        // console.log(status) //obj
+
+        await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+
+        var repmsg = {
+            "embed":
+                {
+                    "title": "更新",
+                    "color": 5301186,
+                    "fields": [{name:'當前周',value:newRound}]
+                }
+        };
+        // console.log(repmsg) //obj
+
+        message.reply(repmsg);
+    }
+    catch (err) {
+        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+        console.log(err)
+        message.reply('錯誤訊息: ' + err.message);
+    }
+
+
 }
 
 
