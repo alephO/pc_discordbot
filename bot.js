@@ -968,9 +968,11 @@ async function uppdateProgress(message, memberid, round, target, del){
                 range:sheetName + '!G' + (round + 1),
                 values:[[1]],
             })
+            console.log('dataLst ', dataLst);
             await gapi.fillBatch(dataLst, chlist[message.channel.id]);
         }
 
+        console.log('wait reply')
         await reply_progress(message);
     }
     catch (err) {
