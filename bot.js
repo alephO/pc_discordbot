@@ -1058,7 +1058,7 @@ async function onModify(message, senderId, memberId){
         const filter = (reaction, user) => {
             return ['1\uFE0F\u20E3', '2\uFE0F\u20E3', '3\uFE0F\u20E3'].includes(reaction.emoji.name) && user.id === message.author.id;
         };
-        message.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+        rMsg.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
             .then(collected => {
                 const reaction = collected.first();
                 if (reaction.emoji.name === '1\uFE0F\u20E3') {
