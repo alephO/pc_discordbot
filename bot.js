@@ -1034,6 +1034,7 @@ async function onModify(message, senderId, memberId){
                 if(data.remain.exist){
                     v += '補償刀 傷害 ' + data.remain.damage +' 目標 ' + data.remain.target;
                 }
+                flds.push({name:n,value:v});
             }
         }
         if(flds.length===0){
