@@ -1024,7 +1024,7 @@ async function onModify(message, senderId, memberId){
         for(let i = 1; i <=3; i ++ ){
             let data = orgObj['Combat' + i];
             if(data.exist){
-                let n='第' + i + '刀, 點1\uFE0F\u20E3修改';
+                let n='第' + i + '刀, 點 ' + i +'\uFE0F\u20E3 修改';
                 let v='傷害 ' + data.damage +' 目標 ' + data.target;
                 if(data.interrupted){
                     v += ' 有標記尾刀\n';
@@ -1043,7 +1043,7 @@ async function onModify(message, senderId, memberId){
         const repmsg = {
             "embed":
                 {
-                    "title": "點選下方反應修改,1\uFE0F\u20E32\uFE0F\u20E33\uFE0F\u20E3是對應三刀(含補償刀),",
+                    "title": "點選下方反應修改 1\uFE0F\u20E3 2\uFE0F\u20E3 3\uFE0F\u20E3 是對應三刀(含補償刀),",
                     "color": 5301186,
                     "fields": flds
                 }
@@ -1268,7 +1268,6 @@ function getstatus(table, memberName) {
 
 function getOrgStatus(table, memberName) {
     let row = 0;
-    console.log('table ', table, ' member ', memberName)
     for (; row < table.length; row++) {
         if (table[row][0] == memberName) break
     }
@@ -1281,10 +1280,8 @@ function getOrgStatus(table, memberName) {
         };
 
     const tableRow = table[row];
-    console.log('tableRow', tableRow, 'sta0', 'sta');
     let getDataATime = function(tableRow, begin){
         const focus = tableRow.slice(begin, begin + 5);
-        console.log('focus',focus);
         const res={}
         if(!(focus[0] > 0)){
             res.exist = false;
@@ -1309,7 +1306,6 @@ function getOrgStatus(table, memberName) {
         const idx = i * 5 - 2;
         sta['Combat' + i] = getDataATime(tableRow,idx);
     }
-    console.log('sta',sta);
     return sta;
 
 }
