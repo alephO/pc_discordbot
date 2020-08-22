@@ -1082,36 +1082,36 @@ async function onModify(message, senderId, memberId){
                 const addIntBtn = '\u{1F236}';
                 const rmIntBtn = '\u{1F21A}';
                 const remainDmBtn = '\u{1F535}';
-                const remianTgBtn = '\u{1F3F4}';
+                const remainTgBtn = '\u{1F3F3}';
                 newFlds= [
                     {
-                        name:'傷害 點選 ' + damageBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345',
-                        value: data.damage
+                        name: '傷害 ' + data.damage,
+                        value:'點選 ' + damageBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
                     },
                     {
-                        name:'目標 點選 ' + targetBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4',
-                        value: data.target
+                        name: '目標 ' + data.target,
+                        value:'點選 ' + targetBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4'
                     },
                 ];
                 if(data.interrupted){
                     newFlds.push({
-                        name: '尾刀標記 點選 ' + rmIntBtn + ' 移除尾刀標記',
-                        value: '有標記'
+                        name: '尾刀標記 有標記',
+                        value: '點選 ' + rmIntBtn + ' 移除尾刀標記'
                     });
                 } else {
                     newFlds.push({
-                        name: '尾刀標記 點選 ' + addIntBtn + ' 標記尾刀',
-                        value: '無標記'
+                        name: '尾刀標記 無標記',
+                        value:'點選 ' + addIntBtn + ' 標記尾刀'
                     });
                 }
                 if(data.remain.exist){
                     newFlds.push(                    {
-                        name:'尾刀傷害 點選 ' + remainDmBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345',
-                        value: data.remain.damage
+                        name:'尾刀傷害 ' + data.remain.damage,
+                        value:'點選 ' + remainDmBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
                     });
                     newFlds.push(                    {
-                        name:'尾刀目標 點選 ' + remianTgBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4',
-                        value: data.remain.target
+                        name:'尾刀目標 '+ data.remain.target ,
+                        value:'點選 ' + remainTgBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4'
                     });
                 }
                 const newRepMsg = {
