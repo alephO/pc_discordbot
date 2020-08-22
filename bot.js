@@ -1287,7 +1287,7 @@ function getOrgStatus(table, memberName) {
         const res={}
         if(!(focus[0] > 0)){
             res.exist = false;
-            return;
+            return res;
         } else {
             res.exist = true;
         }
@@ -1302,6 +1302,7 @@ function getOrgStatus(table, memberName) {
         } else {
             res.remain.exist = false;
         }
+        return res;
     };
     for( i = 1; i <= 3; i++){
         const idx = i * 5 - 2;
