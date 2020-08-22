@@ -1017,11 +1017,28 @@ async function uppdateProgress(message, memberid, round, target, del){
 
 async function onModify(message, senderId, memberId){
     try {
-        await updatePpIfRequired(message);
         const table=await gapi.getDemageTable(chlist[message.channel.id]);
         const memberName = userlist[memberId][0];
         const orgObj = getOrgStatus(table,memberName);
         flds = [];
+        for(let i = 1; i <=3; i ++ ){
+            let data = orgObj['Combat' + i];
+            if(data.exist){
+                let n='第' + i + '刀, 點1\uFE0F\u20E3修改';
+                let v='傷害 ' + data.damage +' 目標 ' + data.target;
+                if(data.interrupted){
+                    v += ' 有標記尾刀\n';
+                } else {
+                    v += ' 未標記尾刀\n';
+                }
+                if(data.remain.exist){
+                    v += '補償刀 傷害 ' + data.remain.damage +' 目標 ' + data.remain.target;
+                }
+            }
+        }
+        if(flds.length===0){
+            throw new Error('今日還沒有報刀 不能修改');
+        }
         const repmsg = {
             "embed":
                 {
@@ -1030,7 +1047,6 @@ async function onModify(message, senderId, memberId){
                     "fields": flds
                 }
         };
-        //console.log('rep is ', repmsg)
         message.reply(repmsg);
     }
     catch (err) {
@@ -1262,7 +1278,6 @@ function getOrgStatus(table, memberName) {
             quit: table[row][2] ? '已用' : '未用'
         };
 
-
     const tableRow = table[row];
     let getDataATime = function(tableRow, begin){
         const focus = tableRow.slice(begin, begin + 5);
@@ -1272,8 +1287,8 @@ function getOrgStatus(table, memberName) {
             return;
         } else {
             res.exist = true;
-            res.damage = true;
         }
+        res.damage = focus[0];
         res.target = focus[1];
         res.interrupted = focus[2];
         res.remain = {};
@@ -1282,12 +1297,12 @@ function getOrgStatus(table, memberName) {
             res.remain.damage = focus[3];
             res.remain.target = focus[4];
         } else {
-            res.exist = false;
+            res.remain.exist = false;
         }
     };
     for( i = 1; i <= 3; i++){
         const idx = i * 5 - 2;
-        sta[i] = getDataATime(tableRow,idx);
+        sta['Combat' + i] = getDataATime(tableRow,idx);
     }
 
     return sta;
