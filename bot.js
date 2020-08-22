@@ -1280,8 +1280,10 @@ function getOrgStatus(table, memberName) {
         };
 
     const tableRow = table[row];
+    console.log('tableRow', tableRow, 'sta0', 'sta');
     let getDataATime = function(tableRow, begin){
         const focus = tableRow.slice(begin, begin + 5);
+        console.log('focus',focus);
         const res={}
         if(!(focus[0] > 0)){
             res.exist = false;
@@ -1305,7 +1307,7 @@ function getOrgStatus(table, memberName) {
         const idx = i * 5 - 2;
         sta['Combat' + i] = getDataATime(tableRow,idx);
     }
-
+    console.log('sta',sta);
     return sta;
 
 }
