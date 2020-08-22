@@ -730,7 +730,7 @@ client.on('message', async message => {
                         if (args[0]!=undefined) {
                             member_id = args[0].replace(/[^0-9\.]+/g, '');
                         }
-                        await onModify(sender_id,member_id);
+                        await onModify(message,sender_id,member_id);
 
                         //await uppdateProgress(message, member_id, round, target, del);
                     } catch (err) {
