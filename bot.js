@@ -721,6 +721,25 @@ client.on('message', async message => {
                     }
                 })
                 return;
+            }  else if (command === '修改' || command=='change') {
+                queue.push(async () => {
+                    try {
+                        console.log(message.content);
+                        const sender_id = message.author.id;
+                        let member_id = sender_id;
+                        if (args[0]!=undefined) {
+                            member_id = args[0].replace(/[^0-9\.]+/g, '');
+                        }
+                        await onModify(sender_id,member_id);
+
+                        //await uppdateProgress(message, member_id, round, target, del);
+                    } catch (err) {
+                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                        console.log(err)
+                        message.reply('錯誤訊息: ' + err.message);
+                    }
+                })
+                return;
             }
 
         }
@@ -996,6 +1015,31 @@ async function uppdateProgress(message, memberid, round, target, del){
 
 }
 
+async function onModify(message, senderId, memberId){
+    try {
+        await updatePpIfRequired(message);
+        const table=await gapi.getDemageTable(chlist[message.channel.id]);
+        const memberName = userlist[memberId][0];
+        const orgObj = getOrgStatus(table,memberName);
+        flds = [];
+        const repmsg = {
+            "embed":
+                {
+                    "title": "點選下方反應修改,1\uFE0F\u20E32\uFE0F\u20E33\uFE0F\u20E3是對應三刀(含補償刀),",
+                    "color": 5301186,
+                    "fields": flds
+                }
+        };
+        //console.log('rep is ', repmsg)
+        message.reply(repmsg);
+    }
+    catch (err) {
+        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+        console.log(err)
+        message.reply('錯誤訊息: ' + err.message);
+    }
+}
+
 
 async function statusandreply(message, memberid) {
     try {
@@ -1203,6 +1247,51 @@ function getstatus(table, memberName) {
 
         resolve(sta);
     })
+}
+
+function getOrgStatus(table, memberName) {
+    let row = 0;
+    for (; row < table.length; row++) {
+        if (table[row][0] == memberName) break
+    }
+    if (table[row][0] != memberName) {
+        throw new Error('成員未找到')
+    }
+    const sta =
+        {
+            quit: table[row][2] ? '已用' : '未用'
+        };
+
+
+    const tableRow = table[row];
+    let getDataATime = function(tableRow, begin){
+        const focus = tableRow.slice(begin, begin + 5);
+        const res={}
+        if(!(focus[0] > 0)){
+            res.exist = false;
+            return;
+        } else {
+            res.exist = true;
+            res.damage = true;
+        }
+        res.target = focus[1];
+        res.interrupted = focus[2];
+        res.remain = {};
+        if(focus[3]>0){
+            res.remain.exist = true;
+            res.remain.damage = focus[3];
+            res.remain.target = focus[4];
+        } else {
+            res.exist = false;
+        }
+    };
+    for( i = 1; i <= 3; i++){
+        const idx = i * 5 - 2;
+        sta[i] = getDataATime(tableRow,idx);
+    }
+
+    return sta;
+
 }
 
 function getcrash(table, memberName) {
