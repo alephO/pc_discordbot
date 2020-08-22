@@ -1060,15 +1060,75 @@ async function onModify(message, senderId, memberId){
         };
         rMsg.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
             .then(collected => {
-                const reaction = collected.first();
+                const reaction = collected.first()
+                let resRt = -1;
                 if (reaction.emoji.name === '1\uFE0F\u20E3') {
-                    message.reply('you reacted with \'1\uFE0F\u20E3\'.');
+                    resRt = 1;
                 } else if (reaction.emoji.name === '2\uFE0F\u20E3'){
-                    message.reply('you reacted with \'2\uFE0F\u20E3\'.');
-                } else{
-                    message.reply('you reacted with \'3\uFE0F\u20E3\'.');
+                    resRt = 2;
+                } else if (reaction.emoji.name === '3\uFE0F\u20E3'){
+                    resRt = 3;
                 }
+                if(i === -1){
+                    throw new Error('回應錯誤 請重新發出!change指令');
+                }
+                let data = orgObj['Combat' + resRt];
+                if(!data.exist){
+                    throw new Error('第' + i + '刀的數據不存在 請重新發出!change指令');
+                }
+                let newFlds = [];
+                const damageBtn = '\u{1F534}';
+                const targetBtn = '\u{1F3C1}';
+                const addIntBtn = '\u{1F236}';
+                const rmIntBtn = '\u{1F21A}';
+                const remainDmBtn = '\u{1F535}';
+                const remianTgBtn = '\u{1F3F4}';
+                newFlds= [
+                    {
+                        name:'傷害 點選 ' + damageBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345',
+                        value: data.damage
+                    },
+                    {
+                        name:'目標 點選 ' + targetBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4',
+                        value: data.target
+                    },
+                ];
+                if(data.interrupted){
+                    newFlds.push({
+                        name: '尾刀標記 點選 ' + rmIntBtn + ' 移除尾刀標記',
+                        value: '有標記'
+                    });
+                } else {
+                    newFlds.push({
+                        name: '尾刀標記 點選 ' + addIntBtn + ' 標記尾刀',
+                        value: '無標記'
+                    });
+                }
+                if(data.remain.exist){
+                    newFlds.push(                    {
+                        name:'尾刀傷害 點選 ' + remainDmBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345',
+                        value: data.remain.damage
+                    });
+                    newFlds.push(                    {
+                        name:'尾刀目標 點選 ' + remianTgBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4',
+                        value: data.remain.target
+                    });
+                }
+                const newRepMsg = {
+                    "embed":
+                        {
+                            "title": "點選下方反應修改 可能需要同時輸入'!answer'指令提供具體數值",
+                            "color": 5301186,
+                            "fields": newFlds
+                        }
+                };
+                message.reply(newRepMsg).then(
+                    msg=>{
+                        console.log('Second msg send. msg ', msg);
+                    }
+                )
             });
+
     }
     catch (err) {
         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
