@@ -1267,6 +1267,7 @@ function getstatus(table, memberName) {
 
 function getOrgStatus(table, memberName) {
     let row = 0;
+    console.log('table ', table, ' member ', member)
     for (; row < table.length; row++) {
         if (table[row][0] == memberName) break
     }
