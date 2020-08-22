@@ -1048,7 +1048,13 @@ async function onModify(message, senderId, memberId){
                     "fields": flds
                 }
         };
-        message.reply(repmsg);
+        let rMsg = await message.reply(repmsg);
+        for(let i = 1; i <=3; i ++ ) {
+            let data = orgObj['Combat' + i];
+            if(data.exist){
+                rMsg.react(''+i +'\uFE0F\u20E3');
+            }
+        }
     }
     catch (err) {
         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
