@@ -1055,6 +1055,20 @@ async function onModify(message, senderId, memberId){
                 rMsg.react(''+i +'\uFE0F\u20E3');
             }
         }
+        const filter = (reaction, user) => {
+            return ['1\uFE0F\u20E3', '2\uFE0F\u20E3', '3\uFE0F\u20E3'].includes(reaction.emoji.name) && user.id === message.author.id;
+        };
+        message.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+            .then(collected => {
+                const reaction = collected.first();
+                if (reaction.emoji.name === '1\uFE0F\u20E3') {
+                    message.reply('you reacted with \'1\uFE0F\u20E3\'.');
+                } else if (reaction.emoji.name === '2\uFE0F\u20E3'){
+                    message.reply('you reacted with \'2\uFE0F\u20E3\'.');
+                } else{
+                    message.reply('you reacted with \'3\uFE0F\u20E3\'.');
+                }
+            });
     }
     catch (err) {
         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
@@ -1282,6 +1296,7 @@ function getOrgStatus(table, memberName) {
     }
     const sta =
         {
+            row:row,
             quit: table[row][2] ? '已用' : '未用'
         };
 
