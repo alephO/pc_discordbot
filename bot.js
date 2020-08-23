@@ -96,11 +96,14 @@ client.on('ready', async () => {
     }
     console.log(userlist);
     console.log(client.user.username + " is ready.");
+    data = [];
     for(let guild of client.guilds){
-        for(let mem of guild.members){
-            console.log(mem);
+        for(let mem of guild[1].members){
+            let usr = mem[1].user;
+            data.push([usr.id,mem[1].displayName,usr.username]);
         }
     }
+    console.log(data);
 });
 
 
