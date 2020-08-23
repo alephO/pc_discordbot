@@ -793,7 +793,7 @@ client.on('message', async message => {
                         }
                         let range='A1:'+'B'+data.length
                         await gapi.fillin(range,data,chlist[message.channel.id],'temp');
-                        message.reply('成員名單已存入temp分頁 請檢查后把正確的成員黏貼到名單分頁');
+                        message.reply('成員名單已存入temp分頁 對比 然後把正確的成員黏貼到名單分頁');
 
                     } catch (err) {
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
