@@ -18,6 +18,7 @@ const column = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
     'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AO', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AW', 'AX', 'AY', 'AZ',
     'BA', 'BB', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH']
 var objlist = { "1": "一王", "2": "二王", "3": "三王", "4": "四王", "5": "五王", "一": "一王", "二": "二王", "三": "三王", "四": "四王", "五": "五王" }
+const fillType={BOOL:0,INT:1,TARGET:2};
 
 //channel id : role id
 // const grouptaglist = {
@@ -29,7 +30,7 @@ var userlist = {}
 // TODO: check if this should be removes
 var channelid = '' //channel to broadcast from direct message
 
-
+const answerDict = {};
 let current_r = -1;
 let largest_r = -1;
 
@@ -1141,8 +1142,45 @@ async function onModify(message, senderId, memberId){
                         rrMsg.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
                             .then(collected => {
                                 const reaction = collected.first();
-                                message.reply('emoji name is ' + reaction.emoji.name +' affected row is ' +orgObj.row
-                                + ' affected combat is ' + resRt );
+                                // message.reply('emoji name is ' + reaction.emoji.name +' affected row is ' +orgObj.row
+                                // + ' affected combat is ' + resRt );
+                                let rpl = '錯誤 請重試';
+                                let col = -1;
+                                let dataType = -1;
+                                if(reaction.emoji.name==damageBtn){
+                                    rpl = '將修改第' + resRt + '刀傷害 請在五分鐘内發送 `!answer 正確數值`';
+                                    col = 5 * rpl - 2;
+                                    dataType = fillType.INT;
+                                } else if(reaction.emoji.name==targetBtn){
+                                    rpl = '將修改第' + resRt + '刀目標 請在五分鐘内發送 `!answer 正確目標`';
+                                    col = 5 * rpl - 1;
+                                    dataType = fillType.TARGET;
+                                } else if(reaction.emoji.name==remainDmBtn){
+                                    rpl = '將修改第' + resRt + '刀的補償刀傷害 請在五分鐘内發送 `!answer 正確數值`';
+                                    col = 5 * rpl + 1;
+                                    dataType = fillType.INT;
+                                } else if(reaction.emoji.name==remainTgBtn){
+                                    rpl = '將修改第' + resRt + '刀的補償刀目標 請在五分鐘内發送 `!answer 正確目標`';
+                                    col = 5 * rpl + 2;
+                                    dataType = fillType.TARGET;
+                                } else if(reaction.emoji.name==addIntBtn || reaction.emoji.name==rmIntBtn){
+                                    let v = reaction.emoji.name==addIntBtn?true:false;
+                                    gapi.fillin(column[col] + (orgObj.row + 1), [[v]], chlist[message.channel.id],
+                                        '').then(()=>{
+                                            statusandreply(message, memberId);
+                                    }).catch(err=>{
+                                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                                        console.log(err)
+                                        message.reply('錯誤訊息: ' + err.message);});
+                                    return;
+                                }
+                                answerDict[senderId] = {
+                                    row:orgObj.row + 1,
+                                    column:col,
+                                    dataType:dataType,
+                                    memberId:memberId,
+                                    time:Date.now()
+                                }
                             }).catch(err=>{
                                 console.log(err.message + ' : ' + message.author.username + ':' + message.content)
                                 console.log(err)
