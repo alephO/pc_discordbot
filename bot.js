@@ -1165,6 +1165,7 @@ async function onModify(message, senderId, memberId){
                                     dataType = fillType.TARGET;
                                 } else if(reaction.emoji.name==addIntBtn || reaction.emoji.name==rmIntBtn){
                                     let v = reaction.emoji.name==addIntBtn?true:false;
+                                    console.log('col',col,'col[col]',column[col],'(orgObj.row + 1)',(orgObj.row + 1));
                                     gapi.fillin(column[col] + (orgObj.row + 1), [[v]], chlist[message.channel.id],
                                         '').then(()=>{
                                             statusandreply(message, memberId);
