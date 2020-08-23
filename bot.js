@@ -787,11 +787,11 @@ client.on('message', async message => {
                 queue.push(async () => {
                     try {
                         let data = []
-                        for(mem of message.guild.members){
+                        for(let mem of message.guild.members){
                             let usr = mem[1].user;
-                            data.push([usr.id,usr.username]);
+                            data.push([usr.id,mem[1].displayName,usr.username]);
                         }
-                        let range='A1:'+'B'+data.length
+                        let range='A1:'+'C'+data.length
                         await gapi.fillin(range,data,chlist[message.channel.id],'temp');
                         message.reply('成員名單已存入temp分頁 對比 然後把正確的成員黏貼到名單分頁');
 
