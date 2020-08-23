@@ -728,7 +728,6 @@ client.on('message', async message => {
             }  else if (command === '修改' || command=='change') {
                 queue.push(async () => {
                     try {
-                        console.log(message.content);
                         const sender_id = message.author.id;
                         let member_id = sender_id;
                         if (args[0]!=undefined) {
@@ -736,7 +735,46 @@ client.on('message', async message => {
                         }
                         await onModify(message,sender_id,member_id);
 
-                        //await uppdateProgress(message, member_id, round, target, del);
+                    } catch (err) {
+                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                        console.log(err)
+                        message.reply('錯誤訊息: ' + err.message);
+                    }
+                })
+                return;
+            } else if (command === 'answer') {
+                queue.push(async () => {
+                    try {
+                        if(args.length!==1){
+                            throw new Error('格式錯誤');
+                        }
+                        if(!(message.author.id in answerDict)){
+                            throw new Error('未找到記錄 請先通過!change啓動修改程式');
+                        }
+                        if(!(Date.now()-answerDict[message.author.id].time <= 300*1000)){
+                            delete answerDict[message.author.id];
+                            throw new Error('已逾時 請再通過!change啓動修改程式');
+                        }
+                        let ans = answerDict[message.author.id];
+                        let num = args[0];
+                        if(ans.dataType === fillType.INT){
+                            num = parseInt(num);
+                            if(isNaN(num)){
+                                throw new Error('傷害數值錯誤');
+                            }
+                        } else if(ans.dataType ===fillType.BOOL){
+                            throw new Error('此類型未實現');
+                        } else if(ans.dataType===fillType.TARGET){
+                            num = objlist[num];
+                            if(num === undefined){
+                                throw new Error('目標錯誤');
+                            }
+                        }else{
+                            throw new Error('錯誤的類型');
+                        }
+
+                        await gapi.fillin(ans.range, [[num]], chlist[message.channel.id], '');
+                        await statusandreply(message, ans.memberId);
                     } catch (err) {
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
                         console.log(err)
@@ -1147,26 +1185,25 @@ async function onModify(message, senderId, memberId){
                                 let rpl = '錯誤 請重試';
                                 let col = -1;
                                 let dataType = -1;
-                                if(reaction.emoji.name==damageBtn){
+                                if(reaction.emoji.name===damageBtn){
                                     rpl = '將修改第' + resRt + '刀傷害 請在五分鐘内發送 `!answer 正確數值`';
                                     col = 5 * resRt - 2;
                                     dataType = fillType.INT;
-                                } else if(reaction.emoji.name==targetBtn){
+                                } else if(reaction.emoji.name===targetBtn){
                                     rpl = '將修改第' + resRt + '刀目標 請在五分鐘内發送 `!answer 正確目標`';
                                     col = 5 * resRt - 1;
                                     dataType = fillType.TARGET;
-                                } else if(reaction.emoji.name==remainDmBtn){
+                                } else if(reaction.emoji.name===remainDmBtn){
                                     rpl = '將修改第' + resRt + '刀的補償刀傷害 請在五分鐘内發送 `!answer 正確數值`';
                                     col = 5 * resRt + 1;
                                     dataType = fillType.INT;
-                                } else if(reaction.emoji.name==remainTgBtn){
+                                } else if(reaction.emoji.name===remainTgBtn){
                                     rpl = '將修改第' + resRt + '刀的補償刀目標 請在五分鐘内發送 `!answer 正確目標`';
                                     col = 5 * resRt + 2;
                                     dataType = fillType.TARGET;
-                                } else if(reaction.emoji.name==addIntBtn || reaction.emoji.name==rmIntBtn){
-                                    let v = reaction.emoji.name==addIntBtn?true:false;
+                                } else if(reaction.emoji.name===addIntBtn || reaction.emoji.name===rmIntBtn){
+                                    let v = reaction.emoji.name === addIntBtn;
                                     col = 5 * resRt;
-                                    console.log('col',col,'col[col]',column[col],'(orgObj.row + 1)',(orgObj.row + 1));
                                     gapi.fillin(column[col] + (orgObj.row + 1), [[v]], chlist[message.channel.id],
                                         '').then(()=>{
                                             statusandreply(message, memberId);
@@ -1176,9 +1213,13 @@ async function onModify(message, senderId, memberId){
                                         message.reply('錯誤訊息: ' + err.message);});
                                     return;
                                 }
+                                if(col===-1){
+                                    message.reply('選擇錯誤 請重試');
+                                    return;
+                                }
+                                message.reply(rpl)
                                 answerDict[senderId] = {
-                                    row:orgObj.row + 1,
-                                    column:col,
+                                    range:column[col] + (orgObj.row + 1),
                                     dataType:dataType,
                                     memberId:memberId,
                                     time:Date.now()
