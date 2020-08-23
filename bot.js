@@ -774,6 +774,7 @@ client.on('message', async message => {
                         }
 
                         await gapi.fillin(ans.range, [[num]], chlist[message.channel.id], '');
+                        delete answerDict[message.author.id];
                         await statusandreply(message, ans.memberId);
                     } catch (err) {
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
