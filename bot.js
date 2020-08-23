@@ -749,11 +749,11 @@ client.on('message', async message => {
                             throw new Error('格式錯誤');
                         }
                         if(!(message.author.id in answerDict)){
-                            throw new Error('未找到記錄 請先通過!change啓動修改程式');
+                            throw new Error('未找到記錄 請先透過!change啟動修改程式');
                         }
                         if(!(Date.now()-answerDict[message.author.id].time <= 300*1000)){
                             delete answerDict[message.author.id];
-                            throw new Error('已逾時 請再通過!change啓動修改程式');
+                            throw new Error('已逾時 請再透過!change啟動修改程式');
                         }
                         let ans = answerDict[message.author.id];
                         let num = args[0];
@@ -1130,11 +1130,11 @@ async function onModify(message, senderId, memberId){
                 newFlds= [
                     {
                         name: '傷害 ' + data.damage,
-                        value:'點選 ' + damageBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
+                        value:'點選 ' + damageBtn +' 並呼叫\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
                     },
                     {
                         name: '目標 ' + data.target,
-                        value:'點選 ' + targetBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4'
+                        value:'點選 ' + targetBtn +' 並呼叫\'!answer 正確目標\'修改目標王 ex: !answer 4'
                     },
                 ];
                 if(data.interrupted){
@@ -1153,11 +1153,11 @@ async function onModify(message, senderId, memberId){
                 if(data.remain.exist){
                     newFlds.push(                    {
                         name:'尾刀傷害 ' + data.remain.damage,
-                        value:'點選 ' + remainDmBtn +' 並發送\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
+                        value:'點選 ' + remainDmBtn +' 並呼叫\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
                     });
                     newFlds.push(                    {
                         name:'尾刀目標 '+ data.remain.target ,
-                        value:'點選 ' + remainTgBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4'
+                        value:'點選 ' + remainTgBtn +' 並呼叫\'!answer 正確目標\'修改目標王 ex: !answer 4'
                     });
                     rts.push(remainDmBtn);
                     rts.push(remainTgBtn);
@@ -1187,19 +1187,19 @@ async function onModify(message, senderId, memberId){
                                 let col = -1;
                                 let dataType = -1;
                                 if(reaction.emoji.name===damageBtn){
-                                    rpl = '將修改第' + resRt + '刀傷害 請在五分鐘内發送 `!answer 正確數值`';
+                                    rpl = '將修改第' + resRt + '刀傷害 請在五分鐘内呼叫 `!answer 正確數值`';
                                     col = 5 * resRt - 2;
                                     dataType = fillType.INT;
                                 } else if(reaction.emoji.name===targetBtn){
-                                    rpl = '將修改第' + resRt + '刀目標 請在五分鐘内發送 `!answer 正確目標`';
+                                    rpl = '將修改第' + resRt + '刀目標 請在五分鐘内呼叫 `!answer 正確目標`';
                                     col = 5 * resRt - 1;
                                     dataType = fillType.TARGET;
                                 } else if(reaction.emoji.name===remainDmBtn){
-                                    rpl = '將修改第' + resRt + '刀的補償刀傷害 請在五分鐘内發送 `!answer 正確數值`';
+                                    rpl = '將修改第' + resRt + '刀的補償刀傷害 請在五分鐘内呼叫 `!answer 正確數值`';
                                     col = 5 * resRt + 1;
                                     dataType = fillType.INT;
                                 } else if(reaction.emoji.name===remainTgBtn){
-                                    rpl = '將修改第' + resRt + '刀的補償刀目標 請在五分鐘内發送 `!answer 正確目標`';
+                                    rpl = '將修改第' + resRt + '刀的補償刀目標 請在五分鐘内呼叫 `!answer 正確目標`';
                                     col = 5 * resRt + 2;
                                     dataType = fillType.TARGET;
                                 } else if(reaction.emoji.name===addIntBtn || reaction.emoji.name===rmIntBtn){
