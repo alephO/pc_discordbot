@@ -1149,22 +1149,23 @@ async function onModify(message, senderId, memberId){
                                 let dataType = -1;
                                 if(reaction.emoji.name==damageBtn){
                                     rpl = '將修改第' + resRt + '刀傷害 請在五分鐘内發送 `!answer 正確數值`';
-                                    col = 5 * rpl - 2;
+                                    col = 5 * resRt - 2;
                                     dataType = fillType.INT;
                                 } else if(reaction.emoji.name==targetBtn){
                                     rpl = '將修改第' + resRt + '刀目標 請在五分鐘内發送 `!answer 正確目標`';
-                                    col = 5 * rpl - 1;
+                                    col = 5 * resRt - 1;
                                     dataType = fillType.TARGET;
                                 } else if(reaction.emoji.name==remainDmBtn){
                                     rpl = '將修改第' + resRt + '刀的補償刀傷害 請在五分鐘内發送 `!answer 正確數值`';
-                                    col = 5 * rpl + 1;
+                                    col = 5 * resRt + 1;
                                     dataType = fillType.INT;
                                 } else if(reaction.emoji.name==remainTgBtn){
                                     rpl = '將修改第' + resRt + '刀的補償刀目標 請在五分鐘内發送 `!answer 正確目標`';
-                                    col = 5 * rpl + 2;
+                                    col = 5 * resRt + 2;
                                     dataType = fillType.TARGET;
                                 } else if(reaction.emoji.name==addIntBtn || reaction.emoji.name==rmIntBtn){
                                     let v = reaction.emoji.name==addIntBtn?true:false;
+                                    col = 5 * resRt;
                                     console.log('col',col,'col[col]',column[col],'(orgObj.row + 1)',(orgObj.row + 1));
                                     gapi.fillin(column[col] + (orgObj.row + 1), [[v]], chlist[message.channel.id],
                                         '').then(()=>{
