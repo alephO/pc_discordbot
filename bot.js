@@ -821,6 +821,10 @@ client.on('message', async message => {
                         "value": "查看呼叫者或某成員當日傷害紀錄"
                     },
                     {
+                        "name": "<!change> 或 <!change @成員> 或<!修改> 或 <!修改 @成員>",
+                        "value": "修改呼叫者或某成員當日傷害紀錄"
+                    },
+                    {
                         "name": "<!remind>",
                         "value": "查看該頻道公會當日剩餘刀數"
                     },
