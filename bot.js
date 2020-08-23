@@ -783,6 +783,20 @@ client.on('message', async message => {
                     }
                 })
                 return;
+            } else if (command === 'update_members') {
+                queue.push(async () => {
+                    try {
+                        for(mem of message.guild.members){
+                            console.log(mem);
+                        }
+
+                    } catch (err) {
+                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                        console.log(err)
+                        message.reply('錯誤訊息: ' + err.message);
+                    }
+                })
+                return;
             }
 
         }
