@@ -1127,7 +1127,11 @@ async function onModify(message, senderId, memberId){
                         console.log('Second msg send. msg ', msg);
                     }
                 )
-            });
+            }).catch( err=>{
+                console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                console.log(err)
+                message.reply('錯誤訊息: ' + err.message);
+        } );
 
     }
     catch (err) {
