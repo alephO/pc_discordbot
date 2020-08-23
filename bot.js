@@ -1074,7 +1074,7 @@ async function onModify(message, senderId, memberId){
                 }
                 let data = orgObj['Combat' + resRt];
                 if(!data.exist){
-                    throw new Error('第' + i + '刀的數據不存在 請重新發出!change指令');
+                    throw new Error('第' + resRt + '刀的數據不存在 請重新發出!change指令');
                 }
                 let newFlds = [];
                 const damageBtn = '\u{1F534}';
@@ -1083,6 +1083,7 @@ async function onModify(message, senderId, memberId){
                 const rmIntBtn = '\u{1F21A}';
                 const remainDmBtn = '\u{1F535}';
                 const remainTgBtn = '\u{1F3F3}';
+                const rts = [damageBtn,targetBtn];
                 newFlds= [
                     {
                         name: '傷害 ' + data.damage,
@@ -1098,11 +1099,13 @@ async function onModify(message, senderId, memberId){
                         name: '尾刀標記 有標記',
                         value: '點選 ' + rmIntBtn + ' 移除尾刀標記'
                     });
+                    rts.push(rmIntBtn);
                 } else {
                     newFlds.push({
                         name: '尾刀標記 無標記',
                         value:'點選 ' + addIntBtn + ' 標記尾刀'
                     });
+                    rts.push(addIntBtn);
                 }
                 if(data.remain.exist){
                     newFlds.push(                    {
@@ -1113,6 +1116,8 @@ async function onModify(message, senderId, memberId){
                         name:'尾刀目標 '+ data.remain.target ,
                         value:'點選 ' + remainTgBtn +' 並發送\'!answer 正確目標\'修改目標王 ex: !answer 4'
                     });
+                    rts.push(remainDmBtn);
+                    rts.push(remainTgBtn);
                 }
                 const newRepMsg = {
                     "embed":
@@ -1123,8 +1128,10 @@ async function onModify(message, senderId, memberId){
                         }
                 };
                 message.reply(newRepMsg).then(
-                    msg=>{
-                        console.log('Second msg send. msg ', msg);
+                    rrMsg=>{
+                        for(let rt of rts){
+                            rrMsg.react(rt);
+                        }
                     }
                 )
             }).catch( err=>{
