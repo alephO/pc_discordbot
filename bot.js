@@ -786,9 +786,14 @@ client.on('message', async message => {
             } else if (command === 'update_members') {
                 queue.push(async () => {
                     try {
+                        let data = []
                         for(mem of message.guild.members){
-                            console.log(mem[1].user);
+                            let usr = mem[1].user;
+                            data.push([usr.id,usr.username]);
                         }
+                        let range='A1:'+'B'+data.length
+                        await gapi.fillin(range,data,chlist[message.channel.id],'temp');
+                        message.reply('成員名單已存入temp分頁 請檢查后把正確的成員黏貼到名單分頁');
 
                     } catch (err) {
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
