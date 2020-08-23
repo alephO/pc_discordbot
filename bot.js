@@ -97,9 +97,8 @@ client.on('ready', async () => {
     console.log(userlist);
     console.log(client.user.username + " is ready.");
     for(let guild of client.guilds){
-        for(let mem of guild.members.fetch()){
-            console.log(mem)
-        }
+        console.log(guild)
+        console.log('typeof',typeof guild);
     }
 });
 
