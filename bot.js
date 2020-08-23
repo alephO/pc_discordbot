@@ -104,6 +104,9 @@ client.on('message', async message => {
 
     if (message.content.substring(0, 1) === "!" || message.content.substring(0, 1) === "！") {
 
+        if(debug){
+            console.log('command: ',message.content.slice(1),' User: ',message.author.id)
+        }
         const args = message.content.slice(1).trim().split(/ +/g);
         const command = args.shift().toLowerCase();
 
@@ -1132,6 +1135,19 @@ async function onModify(message, senderId, memberId){
                         for(let rt of rts){
                             rrMsg.react(rt);
                         }
+                        const filter = (reaction, user) => {
+                            return rts.includes(reaction.emoji.name) && user.id === message.author.id;
+                        };
+                        rrMsg.awaitReactions(filter, { max: 1, time: 30000, errors: ['time'] })
+                            .then(collected => {
+                                const reaction = collected.first();
+                                message.reply('emoji name is ' + reaction.emoji.name +' affected row is ' +orgObj.row
+                                + ' affected combat is ' + resRt );
+                            }).catch(err=>{
+                                console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                                console.log(err)
+                                message.reply('錯誤訊息: ' + err.message);
+                        });
                     }
                 )
             }).catch( err=>{
