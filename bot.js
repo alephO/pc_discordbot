@@ -787,7 +787,7 @@ client.on('message', async message => {
                 queue.push(async () => {
                     try {
                         for(mem of message.guild.members){
-                            console.log(mem);
+                            console.log(mem[1].user);
                         }
 
                     } catch (err) {
