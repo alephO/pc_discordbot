@@ -990,7 +990,7 @@ async function reply_progress(message){
                 if(members===undefined){
                     members='';
                 } else if(members.startsWith('#')) {
-                    let groupIdx = parseInt(inCharge.substr(1));
+                    let groupIdx = parseInt(members.substr(1));
                     if (isNaN(groupIdx)) {
                         throw new Error('組格式錯誤')
                     }
@@ -1134,12 +1134,11 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                     if (isNaN(groupIdx)) {
                         throw new Error('組格式錯誤')
                     }
-                    dataLst.push({range:sheetName + '!' + column_dict[target] + (round + 1), values:[['#' + groupIdx]]});
                 } else {
                     group_table.push([inCharge]);
                     largest_group += 1;
                     groupIdx = largest_group;
-                    dataLst.push({range:sheetName + '!' + column_dict[target] + (round + 1), values:[['']]})
+                    dataLst.push({range:sheetName + '!' + column_dict[target] + (round + 1), values:[['#' + groupIdx]]});
                 }
                 group_table[groupIdx-1].push(memberName)
                 let mLst = group_table[groupIdx-1]
