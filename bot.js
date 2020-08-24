@@ -1103,7 +1103,7 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                 }
                 let mLst = group_table[gpIdx-1]
                 console.log('mLst',mLst,'memName',memberName)
-                if(mLst===undefined || !(memberName in mLst)){
+                if(mLst===undefined || !(mLst.includes(memberName))){
                     message.reply('目標位置沒有該用戶的報刀 不能取消: ');
                     return;
                 }
