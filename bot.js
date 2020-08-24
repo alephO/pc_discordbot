@@ -1149,6 +1149,10 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                     groupIdx = largest_group;
                     dataLst.push({range:sheetName + '!' + column_dict[target] + (round + 1), values:[['#' + groupIdx]]});
                 }
+                if(group_table[groupIdx-1].includes(memberName)){
+                    message.reply('已經報過');
+                    return;
+                }
                 group_table[groupIdx-1].push(memberName)
                 let mLst = group_table[groupIdx-1].slice()
                 mLst.unshift(''+groupIdx);
