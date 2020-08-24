@@ -1102,7 +1102,7 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                     throw new Error('組格式錯誤')
                 }
                 let mLst = group_table[gpIdx-1]
-                console.log('mLst',mLst,'memName',memName)
+                console.log('mLst',mLst,'memName',memberName)
                 if(mLst===undefined || !(memberName in mLst)){
                     message.reply('目標位置沒有該用戶的報刀 不能取消: ');
                     return;
