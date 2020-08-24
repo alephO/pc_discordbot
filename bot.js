@@ -925,7 +925,7 @@ client.on('message', async message => {
                     },
                     {
                         "name": "<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]>",
-                        "value": "報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是幫aleph0取消第13周的五王"
+                        "value": "報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是幫aleph0取消第13周的五王\n如果需要合刀 請在後面加上` 合`或` +`(包括空格)"
                     },
                     {
                         "name": "<!取消number王 [x周] [@成員]> 或<!取消 number [x周] [@成員]>",
@@ -1125,6 +1125,13 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
         } else {
             if(!(inCharge==='')){
                 if(!allowMerge){
+                    if (inCharge.startsWith('#')) {
+                        let gi = parseInt(inCharge.substr(1));
+                        if (isNaN(gi)) {
+                            throw new Error('組格式錯誤')
+                        }
+                        inCharge = group_table[gi-1].join(',');
+                    }
                     message.reply('目標位置現在已經被報過 用戶是 ' + inCharge + '\n 如果需要合刀 請在指令的最後加上` 合`或` +` '+
                                   '此時正確的指令為 `!' + message.content.slice(1) +' 合`');
                     return;
