@@ -920,15 +920,15 @@ client.on('message', async message => {
                         "value": "查看該頻道公會的排刀進度"
                     },
                     {
-                        "name": "<!周 number> 或<number周>",
+                        "name": "<!周 number> 或<number周> (週亦可)",
                         "value": "更新當前周數"
                     },
                     {
-                        "name": "<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]>",
+                        "name": "<!報number王 [x周] [@成員]> 或<!報 number [x周] [@成員]> (週亦可)",
                         "value": "報刀 []内是可選的 ex:!報 2 是報現在這一周的二王 !報 5 13周 @aleph0 是幫aleph0取消第13周的五王\n如果需要合刀 請在後面加上` 合`或` +`(包括空格)"
                     },
                     {
-                        "name": "<!取消number王 [x周] [@成員]> 或<!取消 number [x周] [@成員]>",
+                        "name": "<!取消number王 [x周] [@成員]> 或<!取消 number [x周] [@成員]> (週亦可)",
                         "value": "取消報刀 []内是可選的 ex:!報 2 是取消現在這一周的二王 !報 5 13周 @aleph0 是幫aleph0取消第13周的五王"
                     },
                     // {
