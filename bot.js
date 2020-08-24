@@ -743,7 +743,7 @@ client.on('message', async message => {
                                 if(round===current_r){
                                     round=parseInt(arg)
                                 }
-                            } else if (arg.startsWith('和') || arg==='+') {
+                            } else if (arg.startsWith('合') || arg==='+') {
                                 allow_merge = true;
                             }
                             else throw new Error('不正確的報刀指令: ' + message.author.username + ':' + message.content)
@@ -1123,7 +1123,7 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
             if(!(inCharge==='')){
                 if(!allowMerge){
                     message.reply('目標位置現在已經被報過 用戶是 ' + inCharge + '\n 如果需要合刀 請在指令的最後加上` 合`或` +` '+
-                                  '此時正確的指令為 ' + message.content.slice(1) +' 合');
+                                  '此時正確的指令為 `!' + message.content.slice(1) +' 合`');
                     return;
                 }
                 let dataLst = []
