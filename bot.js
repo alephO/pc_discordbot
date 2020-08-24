@@ -1109,6 +1109,7 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                 }
                 mLst = mLst.filter(function (value,index,arr){return value!==memberName;});
                 group_table[gpIdx-1] = mLst;
+                mLst=group_table[gpIdx-1].slice();
                 await updateGroupLine(message,gpIdx,mLst);
                 await reply_progress(message);
                 return
