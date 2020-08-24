@@ -1141,7 +1141,7 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                     dataLst.push({range:sheetName + '!' + column_dict[target] + (round + 1), values:[['#' + groupIdx]]});
                 }
                 group_table[groupIdx-1].push(memberName)
-                let mLst = group_table[groupIdx-1]
+                let mLst = group_table[groupIdx-1].slice()
                 mLst.unshift(''+groupIdx);
                 while(mLst.length < 10){
                     mLst.push('');
