@@ -100,6 +100,34 @@ module.exports = {
         });
     },
 
+    getGroupProperty: function (SSID) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile('credentials.json', async (err, content) => {
+                if (err) {
+                    console.log('Error loading client secret file:', err);
+                    reject(err);
+                    return;
+                }
+                try {
+                    const oauth = await getauth(JSON.parse(content));
+                    const sheet_name = '報刀表'
+                    let data = await toget(oauth, SSID, sheet_name + '!K2', 'ROWS');
+
+                    console.log('getGroupProperty: data ', data);
+
+                    let largest_group = parseInt(data[0]);
+                    if(isNaN(largest_group)){
+                        largest_group = 0;
+                    }
+                    resolve(largest_group);
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        });
+    },
+
     getInCharge: function (SSID, round, target) {
         return new Promise(function (resolve, reject) {
             fs.readFile('credentials.json', async (err, content) => {
@@ -140,6 +168,29 @@ module.exports = {
                     console.log('range is ', range)
                     const data = await toget(oauth, SSID, range, 'ROWS',
                               'FORMATTED_VALUE');
+                    resolve(data);
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        });
+    },
+
+    getGroupTable: function (SSID, largest_g ) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile('credentials.json', async (err, content) => {
+                if (err) {
+                    console.log('Error loading client secret file:', err);
+                    reject(err);
+                    return;
+                }
+                try {
+                    const oauth = await getauth(JSON.parse(content));
+                    const range='報刀表!M2:W' + (largest_g + 1);
+                    console.log('range is ', range)
+                    const data = await toget(oauth, SSID, range, 'ROWS',
+                        'FORMATTED_VALUE');
                     resolve(data);
                 }
                 catch (err) {

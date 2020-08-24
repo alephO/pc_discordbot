@@ -34,12 +34,31 @@ const answerDict = {};
 let current_r = -1;
 let largest_r = -1;
 
+let group_table = [];
+let largest_group = -1;
+
 async function updatePpIfRequired(message){
     if( current_r===-1 || largest_r===-1 ){
         const progress_property = await gapi.getProgressProperty(chlist[message.channel.id]);
         current_r = progress_property.current_r;
         largest_r = progress_property.largest_r;
-        console.log('Progress value updated. Current is ' + current_r + 'largest is' + largest_r);
+        console.log('Progress value updated. Current is ' + current_r + ' largest is ' + largest_r);
+    }
+}
+
+async function updateGpIfRequired(message){
+    if( largest_group===-1 ){
+        const lg = await gapi.getGroupProperty(chlist[message.channel.id]);
+        largest_group = lg;
+        console.log('Largest group updated. largest is ' + largest_group);
+        if(largest_group>0){
+            data = await gapi.getGroupTable(chlist[message.channel.id],largest_group);
+            group_table=[];
+            for(let ln of data){
+                ln.shift();
+                group_table.push(ln);
+            }
+        }
     }
 }
 
@@ -96,14 +115,16 @@ client.on('ready', async () => {
     }
     console.log(userlist);
     console.log(client.user.username + " is ready.");
-    data = [];
+
     for(let guild of client.guilds){
+        let data = [];
         for(let mem of guild[1].members){
             let usr = mem[1].user;
             data.push([usr.id,mem[1].displayName,usr.username]);
         }
+        console.log(data);
     }
-    console.log(data);
+
 });
 
 
@@ -696,6 +717,7 @@ client.on('message', async message => {
                         let member_id = message.author.id;
                         let target = -1;
                         let round = current_r;
+                        let allow_merge = false;
                         if( command=='報' || command=='取消'){
                             target = parseInt(args[0]);
                             args.shift();
@@ -717,14 +739,20 @@ client.on('message', async message => {
                                 let pattern = /^(\d+)[周週]$/g;
                                 let tag = pattern.exec(arg);
                                 round = parseInt(tag[1]);
+                            }  else if (arg.match(/\d+/g)) {
+                                if(round===current_r){
+                                    round=parseInt(arg)
+                                }
+                            } else if (arg.startsWith('和') || arg==='+') {
+                                allow_merge = true;
                             }
                             else throw new Error('不正確的報刀指令: ' + message.author.username + ':' + message.content)
                         }
-                        del = false;
+                        let del = false;
                         if(command.startsWith('取消')){
                             del=true;
                         }
-                        await uppdateProgress(message,member_id,round,target,del);
+                        await uppdateProgress(message,member_id,round,target,del,allow_merge);
                     }
                     catch (err){
                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
@@ -948,6 +976,7 @@ client.login(token);
 async function reply_progress(message){
     try {
         await updatePpIfRequired(message);
+        await updateGpIfRequired(message);
         const table=await gapi.getProgressTable(chlist[message.channel.id], current_r, largest_r);
         //console.log('table is ', table)
         let flds = [];
@@ -960,6 +989,12 @@ async function reply_progress(message){
                 let members = slice[j]
                 if(members===undefined){
                     members='';
+                } else if(members.startsWith('#')) {
+                    let groupIdx = parseInt(inCharge.substr(1));
+                    if (isNaN(groupIdx)) {
+                        throw new Error('組格式錯誤')
+                    }
+                    members = group_table[groupIdx-1].join(',');
                 }
                 des += j + '王: ' + members + ', ';
             }
@@ -1031,9 +1066,25 @@ async function uppdateCurrentRound(message, newRound){
 
 }
 
-async function uppdateProgress(message, memberid, round, target, del){
+async function updateGroupLine(message, gpIdx, line){
+    try{
+        while(line.length < 10){
+            line.push('');
+        }
+        const row = gpIdx + 1;
+        const range = 'M' + row + ':W' + row;
+        await gapi.fillin(range,[line],chlist[message.channel.id],'報刀表');
+    } catch (err) {
+        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+        console.log(err)
+        message.reply('錯誤訊息: ' + err.message);
+    }
+}
+
+async function uppdateProgress(message, memberid, round, target, del, allowMerge){
     try {
         await updatePpIfRequired(message);
+        await updateGpIfRequired(message);
         const column_dict= {1:'B',2:'C',3:'D',4:'E',5:'F'}
         //console.log('new round is ' + newRound);
         const sheetName = '報刀表';
@@ -1044,7 +1095,22 @@ async function uppdateProgress(message, memberid, round, target, del){
             if(inCharge===''){
                 message.reply('目標位置已經為空，不需要取消: ');
                 return;
-            } else if (inCharge!=memberName){
+            } else if (inCharge.startsWith('#')){
+                let gpIdx = parseInt(inCharge.substr(1));
+                if(isNaN(gpIdx)){
+                    throw new Error('組格式錯誤')
+                }
+                let mLst = group_table[gpIdx-1]
+                if(mLst===undefined || !(memberName in mLst)){
+                    message.reply('目標位置沒有該用戶的報刀 不能取消: ');
+                    return;
+                }
+                mLst = mLst.filter(function (value,index,arr){return value!==memberName;});
+                group_table[gpIdx-1] = mLst;
+                await updateGroupLine(message,gpIdx,mLst);
+                await reply_progress(message);
+                return
+            } else if (inCharge!==memberName){
                 message.reply('目標位置的用戶是 ' + inCharge + ' 如果想取消 要加上@用戶');
                 return;
             }
@@ -1055,27 +1121,56 @@ async function uppdateProgress(message, memberid, round, target, del){
             await gapi.fillBatch(dataLst, chlist[message.channel.id]);
         } else {
             if(!(inCharge==='')){
-                message.reply('目標位置現在已經被報過 用戶是 ' + inCharge);
-                return;
-            }
-            dataLst = []
+                if(!allowMerge){
+                    message.reply('目標位置現在已經被報過 用戶是 ' + inCharge + '\n 如果需要合刀 請在指令的最後加上` 合`或` +` '+
+                                  '此時正確的指令為 ' + message.content.slice(1) +' 合');
+                    return;
+                }
+                let dataLst = []
+                let groupIdx = -1;
+                if (inCharge.startsWith('#')) {
+                    groupIdx = parseInt(inCharge.substr(1));
+                    if (isNaN(groupIdx)) {
+                        throw new Error('組格式錯誤')
+                    }
+                } else {
+                    group_table.push([inCharge]);
+                    largest_group += 1;
+                    groupIdx = largest_group;
+                    dataLst.push({range:sheetName + '!' + column_dict[target] + (round + 1), values:[['']]})
+                }
+                group_table[groupIdx-1].push(memberName)
+                let mLst = group_table[groupIdx-1]
 
-            const idy = round + 1;
-            const range = sheetName + '!' + column_dict[target] + idy;
-            dataLst.push({range:range, values:[[memberName]]});
-            dataLst.push({
-                range:sheetName + '!A' + (round + 1),
-                values:[[round]]
-            });
-            dataLst.push({
-                range:sheetName + '!G' + (round + 1),
-                values:[[1]],
-            })
-            console.log('dataLst ', dataLst);
-            await gapi.fillBatch(dataLst, chlist[message.channel.id]);
-            if(round > largest_r){
-                largest_r = round;
+                while(mLst.length < 10){
+                    mLst.push('');
+                }
+                const row = groupIdx + 1;
+                const range = sheetName + '!M' + row + ':W' + row;
+                dataLst.push({range:range,values:[mLst]});
+                console.log('dataLst ', dataLst);
+                await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+            } else {
+                let dataLst = []
+
+                const idy = round + 1;
+                const range = sheetName + '!' + column_dict[target] + idy;
+                dataLst.push({range:range, values:[[memberName]]});
+                dataLst.push({
+                    range:sheetName + '!A' + (round + 1),
+                    values:[[round]]
+                });
+                dataLst.push({
+                    range:sheetName + '!G' + (round + 1),
+                    values:[[1]],
+                })
+                console.log('dataLst ', dataLst);
+                await gapi.fillBatch(dataLst, chlist[message.channel.id]);
+                if(round > largest_r){
+                    largest_r = round;
+                }
             }
+
         }
 
         console.log('wait reply')
@@ -1112,7 +1207,7 @@ async function onModify(message, senderId, memberId){
             }
         }
         if(flds.length===0){
-            throw new Error('今日還沒有報刀 不能修改');
+            throw new Error('今日還沒有報傷害 不能修改');
         }
         const repmsg = {
             "embed":
