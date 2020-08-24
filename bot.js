@@ -1068,6 +1068,7 @@ async function uppdateCurrentRound(message, newRound){
 
 async function updateGroupLine(message, gpIdx, line){
     try{
+        line.unshift('' + gpIdx);
         while(line.length < 10){
             line.push('');
         }
@@ -1133,6 +1134,7 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                     if (isNaN(groupIdx)) {
                         throw new Error('組格式錯誤')
                     }
+                    dataLst.push({range:sheetName + '!' + column_dict[target] + (round + 1), values:[['#' + groupIdx]]});
                 } else {
                     group_table.push([inCharge]);
                     largest_group += 1;
@@ -1141,7 +1143,7 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                 }
                 group_table[groupIdx-1].push(memberName)
                 let mLst = group_table[groupIdx-1]
-
+                mLst.unshift(''+groupIdx);
                 while(mLst.length < 10){
                     mLst.push('');
                 }
