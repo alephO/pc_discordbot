@@ -1019,7 +1019,9 @@ async function reply_progress(message){
         //console.log('rep is ', repmsg)
         message.reply(repmsg);
         if(chlist[message.channel.id]==="1NcLh4sj4VH8duSz7Z2DtAgDUY2gOtWXpygDVvTQWNXQ"){
-            client.channels.get("736666582025109525").send( repmsg );
+            if(message.channel.id!=="736666582025109525"){
+                client.channels.get("736666582025109525").send( repmsg );
+            }
         }
     }
     catch (err) {
@@ -1062,13 +1064,15 @@ async function uppdateCurrentRound(message, newRound){
                     "fields": [ { name:'當前周',value:newRound } ]
                 }
         };
-        if(chlist[message.channel.id]==="1NcLh4sj4VH8duSz7Z2DtAgDUY2gOtWXpygDVvTQWNXQ"){
-            client.channels.get("736666582025109525").send( repmsg );
-        }
         //console.log(repmsg);
         // console.log(repmsg) //obj
 
         message.reply(repmsg);
+        if(chlist[message.channel.id]==="1NcLh4sj4VH8duSz7Z2DtAgDUY2gOtWXpygDVvTQWNXQ"){
+            if(message.channel.id!=="736666582025109525"){
+                client.channels.get("736666582025109525").send( repmsg );
+            }
+        }
 
     }
     catch (err) {
