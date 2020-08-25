@@ -1144,7 +1144,15 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                         if (isNaN(gi)) {
                             throw new Error('組格式錯誤')
                         }
+                        if(group_table[gi-1].includes(memberName)){
+                            message.reply('這個用戶已經報過這隻王 不需要重複報喔')
+                            return
+                        }
                         inCharge = group_table[gi-1].join(',');
+                    }
+                    if(inCharge === memberName){
+                        message.reply('這個用戶已經報過這隻王 不需要重複報喔')
+                        return
                     }
                     message.reply('目標位置現在已經被報過 用戶是 ' + inCharge + '\n 如果需要合刀 請在指令的最後加上` 合`或` +` '+
                                   '此時正確的指令為 `!' + message.content.slice(1) +' 合`');
