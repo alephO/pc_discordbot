@@ -945,6 +945,7 @@ client.on('message', async message => {
             }
 
         }
+
         else if (command === 'reload') {
             try {
                 userlist = {};
@@ -1017,6 +1018,9 @@ async function reply_progress(message){
         };
         //console.log('rep is ', repmsg)
         message.reply(repmsg);
+        if(chlist[message.channel.id]==="1NcLh4sj4VH8duSz7Z2DtAgDUY2gOtWXpygDVvTQWNXQ"){
+            client.channels.get("736666582025109525").send( repmsg );
+        }
     }
     catch (err) {
         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
