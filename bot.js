@@ -1062,10 +1062,14 @@ async function uppdateCurrentRound(message, newRound){
                     "fields": [ { name:'當前周',value:newRound } ]
                 }
         };
+        if(chlist[message.channel.id]==="1NcLh4sj4VH8duSz7Z2DtAgDUY2gOtWXpygDVvTQWNXQ"){
+            client.channels.get("736666582025109525").send( repmsg );
+        }
         //console.log(repmsg);
         // console.log(repmsg) //obj
 
         message.reply(repmsg);
+
     }
     catch (err) {
         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
