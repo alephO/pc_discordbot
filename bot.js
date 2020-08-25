@@ -937,7 +937,13 @@ client.on('message', async message => {
                     // }
                 ]
             };
-            message.channel.send({ embed });
+            let ci = args[0]
+            if(ci == undefined){
+                message.channel.send({ embed });
+            } else {
+                client.channels.get(ci).send({ embed });
+            }
+
         }
         else if (command === 'reload') {
             try {
