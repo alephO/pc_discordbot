@@ -1668,13 +1668,14 @@ function getOrgStatus(table, memberName) {
         const res={}
         if(!(focus[0] > 0)){
             res.exist = false;
-            return res;
         } else {
             res.exist = true;
         }
-        res.damage = focus[0];
-        res.target = focus[1];
-        res.interrupted = focus[2];
+        if(res.exist){
+            res.damage = focus[0];
+            res.target = focus[1];
+            res.interrupted = focus[2];
+        }
         res.remain = {};
         if(focus[3]>0){
             res.remain.exist = true;
