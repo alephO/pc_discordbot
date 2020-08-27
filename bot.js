@@ -1314,20 +1314,21 @@ async function onModify(message, senderId, memberId){
                     ];
                     rts.push(damageBtn);
                     rts.push(targetBtn);
+                    if(data.interrupted){
+                        newFlds.push({
+                            name: '尾刀標記 有標記',
+                            value: '點選 ' + rmIntBtn + ' 移除尾刀標記(僅標記)'
+                        });
+                        rts.push(rmIntBtn);
+                    } else {
+                        newFlds.push({
+                            name: '尾刀標記 無標記',
+                            value:'點選 ' + addIntBtn + ' 標記尾刀'
+                        });
+                        rts.push(addIntBtn);
+                    }
                 }
-                if(data.interrupted){
-                    newFlds.push({
-                        name: '尾刀標記 有標記',
-                        value: '點選 ' + rmIntBtn + ' 移除尾刀標記(僅標記)'
-                    });
-                    rts.push(rmIntBtn);
-                } else {
-                    newFlds.push({
-                        name: '尾刀標記 無標記',
-                        value:'點選 ' + addIntBtn + ' 標記尾刀'
-                    });
-                    rts.push(addIntBtn);
-                }
+
                 if(data.remain.exist){
                     newFlds.push(                    {
                         name:'尾刀已報',
