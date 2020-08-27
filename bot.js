@@ -1129,8 +1129,10 @@ async function uppdateProgress(message, memberid, round, target, del, allowMerge
                 group_table[gpIdx-1] = mLst;
                 mLst=group_table[gpIdx-1].slice();
                 await updateGroupLine(message,gpIdx,mLst);
-                await reply_progress(message);
-                return
+                if(!(group_table[gpIdx-1].length === 0)){
+                    await reply_progress(message);
+                    return
+                }
             } else if (inCharge!==memberName){
                 message.reply('目標位置的用戶是 ' + inCharge + ' 如果想取消 要加上@用戶');
                 return;
@@ -1232,14 +1234,18 @@ async function onModify(message, senderId, memberId){
         flds = [];
         for(let i = 1; i <=3; i ++ ){
             let data = orgObj['Combat' + i];
-            if(data.exist){
+            if(data.exist || data.remain.exist){
                 let n='第' + i + '刀, 點 ' + i +'\uFE0F\u20E3 修改';
-                let v='傷害 ' + data.damage +' 目標 ' + data.target;
-                if(data.interrupted){
-                    v += ' 有標記尾刀\n';
-                } else {
-                    v += ' 未標記尾刀\n';
+                let v = '';
+                if(data.exist){
+                    v += '傷害 ' + data.damage +' 目標 ' + data.target;
+                    if(data.interrupted){
+                        v += ' 有標記尾刀\n';
+                    } else {
+                        v += ' 未標記尾刀\n';
+                    }
                 }
+
                 if(data.remain.exist){
                     v += '補償刀 傷害 ' + data.remain.damage +' 目標 ' + data.remain.target;
                 }
@@ -1260,7 +1266,7 @@ async function onModify(message, senderId, memberId){
         let rMsg = await message.reply(repmsg);
         for(let i = 1; i <=3; i ++ ) {
             let data = orgObj['Combat' + i];
-            if(data.exist){
+            if(data.exist || data.remain.exist){
                 rMsg.react(''+i +'\uFE0F\u20E3');
             }
         }
@@ -1282,7 +1288,7 @@ async function onModify(message, senderId, memberId){
                     throw new Error('回應錯誤 請重新發出!change指令');
                 }
                 let data = orgObj['Combat' + resRt];
-                if(!data.exist){
+                if(!data.exist && !data.remain.exist){
                     throw new Error('第' + resRt + '刀的數據不存在 請重新發出!change指令');
                 }
                 let newFlds = [];
@@ -1292,21 +1298,26 @@ async function onModify(message, senderId, memberId){
                 const rmIntBtn = '\u{1F21A}';
                 const remainDmBtn = '\u{1F535}';
                 const remainTgBtn = '\u{1F3F3}';
-                const rts = [damageBtn,targetBtn];
-                newFlds= [
-                    {
-                        name: '傷害 ' + data.damage,
-                        value:'點選 ' + damageBtn +' 並呼叫\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
-                    },
-                    {
-                        name: '目標 ' + data.target,
-                        value:'點選 ' + targetBtn +' 並呼叫\'!answer 正確目標\'修改目標王 ex: !answer 4'
-                    },
-                ];
+                const removeRmBtn = '\u{274E}';
+                const rts = [];
+                if(data.exist){
+                    newFlds= [
+                        {
+                            name: '傷害 ' + data.damage,
+                            value:'點選 ' + damageBtn +' 並呼叫\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
+                        },
+                        {
+                            name: '目標 ' + data.target,
+                            value:'點選 ' + targetBtn +' 並呼叫\'!answer 正確目標\'修改目標王 ex: !answer 4'
+                        },
+                    ];
+                    rts.push(damageBtn);
+                    rts.push(targetBtn);
+                }
                 if(data.interrupted){
                     newFlds.push({
                         name: '尾刀標記 有標記',
-                        value: '點選 ' + rmIntBtn + ' 移除尾刀標記'
+                        value: '點選 ' + rmIntBtn + ' 移除尾刀標記(僅標記)'
                     });
                     rts.push(rmIntBtn);
                 } else {
@@ -1318,6 +1329,10 @@ async function onModify(message, senderId, memberId){
                 }
                 if(data.remain.exist){
                     newFlds.push(                    {
+                        name:'尾刀已報',
+                        value:'點選 ' + removeRmBtn +' 把整個尾刀移除 但尾刀標記不會移除'
+                    });
+                    newFlds.push(                    {
                         name:'尾刀傷害 ' + data.remain.damage,
                         value:'點選 ' + remainDmBtn +' 並呼叫\'!answer 正確傷害\'修改傷害 ex: !answer 12345'
                     });
@@ -1325,6 +1340,7 @@ async function onModify(message, senderId, memberId){
                         name:'尾刀目標 '+ data.remain.target ,
                         value:'點選 ' + remainTgBtn +' 並呼叫\'!answer 正確目標\'修改目標王 ex: !answer 4'
                     });
+                    rts.push(removeRmBtn);
                     rts.push(remainDmBtn);
                     rts.push(remainTgBtn);
                 }
@@ -1374,6 +1390,16 @@ async function onModify(message, senderId, memberId){
                                     gapi.fillin(column[col] + (orgObj.row + 1), [[v]], chlist[message.channel.id],
                                         '').then(()=>{
                                             statusandreply(message, memberId);
+                                    }).catch(err=>{
+                                        console.log(err.message + ' : ' + message.author.username + ':' + message.content)
+                                        console.log(err)
+                                        message.reply('錯誤訊息: ' + err.message);});
+                                    return;
+                                } else if(reaction.emoji.name===removeRmBtn){
+                                    col = 5 * resRt + 1;
+                                    gapi.fillin(column[col] + (orgObj.row + 1) + ':' + column[col+1] + (orgObj.row + 1), [["",""]], chlist[message.channel.id],
+                                        '').then(()=>{
+                                        statusandreply(message, memberId);
                                     }).catch(err=>{
                                         console.log(err.message + ' : ' + message.author.username + ':' + message.content)
                                         console.log(err)
