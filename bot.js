@@ -1231,6 +1231,7 @@ async function onModify(message, senderId, memberId){
         const table=await gapi.getDemageTable(chlist[message.channel.id]);
         const memberName = userlist[memberId][0];
         const orgObj = getOrgStatus(table,memberName);
+        console.log('orgObj ',orgObj)
         flds = [];
         for(let i = 1; i <=3; i ++ ){
             let data = orgObj['Combat' + i];
