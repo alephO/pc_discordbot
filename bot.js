@@ -1234,7 +1234,7 @@ async function onModify(message, senderId, memberId){
         flds = [];
         for(let i = 1; i <=3; i ++ ){
             let data = orgObj['Combat' + i];
-            if(data.exist || data.remain.exist){
+            if(data.exist || (data.remain && data.remain.exist)){
                 let n='第' + i + '刀, 點 ' + i +'\uFE0F\u20E3 修改';
                 let v = '';
                 if(data.exist){
@@ -1266,7 +1266,7 @@ async function onModify(message, senderId, memberId){
         let rMsg = await message.reply(repmsg);
         for(let i = 1; i <=3; i ++ ) {
             let data = orgObj['Combat' + i];
-            if(data.exist || data.remain.exist){
+            if(data.exist || (data.remain && data.remain.exist)){
                 rMsg.react(''+i +'\uFE0F\u20E3');
             }
         }
@@ -1288,7 +1288,7 @@ async function onModify(message, senderId, memberId){
                     throw new Error('回應錯誤 請重新發出!change指令');
                 }
                 let data = orgObj['Combat' + resRt];
-                if(!data.exist && !data.remain.exist){
+                if(!data.exist && !(data.remain && data.remain.exist)){
                     throw new Error('第' + resRt + '刀的數據不存在 請重新發出!change指令');
                 }
                 let newFlds = [];
